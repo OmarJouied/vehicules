@@ -1,13 +1,19 @@
 import mongoose, { InferSchemaType, models, Schema } from "mongoose";
 
 const prixSchema = new Schema({
-  type_curburant: {
+  prix_name: {
     type: String,
     required: true,
-    unique: true,
-    index: true
   },
-  value: Number,
+  prix_valeur: {
+    type: Number,
+    required: true,
+  },
+  est_carburant: Boolean,
+  date: {
+    type: Date,
+    default: Date.now()
+  },
 });
 
 const Prix = models.Prix || mongoose.model("Prix", prixSchema);

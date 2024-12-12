@@ -1,12 +1,12 @@
-import Vehicule from "@/models/Vehicule";
+import Prix from "@/models/Prix";
 import ResponseType from "@/types/ResponseType";
 import { wrapperEndPoints } from "@/utils/backend-functions";
 
 const DELETE = wrapperEndPoints(async (req: Request) => {
   try {
-    const matricules: string[] = await req.json();
+    const ids: string[] = await req.json();
 
-    await Vehicule.deleteMany({ matricule: matricules });
+    await Prix.deleteMany({ _id: ids });
 
     return Response.json({ error: false, message: "Supprime avec succes" } as ResponseType, { status: 202 });
   } catch {

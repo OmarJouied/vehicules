@@ -14,6 +14,26 @@ const links = [
     label: 'Deplacements',
   },
   {
+    href: '/vidange',
+    label: 'vidange',
+  },
+  {
+    href: '/analytics',
+    label: 'analytics',
+  },
+  {
+    href: '/graphiques',
+    label: 'graphiques',
+  },
+  {
+    href: '/depensesSupplementaires',
+    label: 'depensesSupplementaires',
+  },
+  {
+    href: '/change_type_carburant',
+    label: 'change type carburant',
+  },
+  {
     href: '/prix',
     label: 'Prix',
   },
@@ -31,7 +51,7 @@ const NavBar = () => {
     <div>
       <button className="navbar-burger flex items-center text-primary border border-primary rounded-md p-3" onClick={() => setIsOpen(true)}>
         <svg className="block h-4 w-4 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <title>Mobile menu</title>
+          <title>Menu</title>
           <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"></path>
         </svg>
       </button>
@@ -49,7 +69,7 @@ const NavBar = () => {
               {
                 links.map(link => (
                   <li className="mb-1" key={link.label}>
-                    <Link className={`block p-4 text-sm font-semibold text-white hover:bg-primary-foreground/10 rounded ${pathname === link.href && "hover:bg-primary-foreground/30 bg-primary-foreground/30"}`} href={link.href}>{link.label}</Link>
+                    <Link className={`capitalize block p-4 text-sm font-semibold text-white hover:bg-primary-foreground/10 rounded ${pathname === link.href && "hover:bg-primary-foreground/30 bg-primary-foreground/30"}`} href={link.href}>{link.label}</Link>
                   </li>
                 ))
               }

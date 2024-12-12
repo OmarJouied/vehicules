@@ -1,10 +1,12 @@
-import AddVehicule from './AddVehicule'
+import AddData from "./AddData";
+import RangeDatesAnalytics from "./RangeDatesAnalytics";
 
 const DataHeader = ({ fields, title }: { fields: string[]; title: string }) => {
   return (
-    <header className='w-full flex justify-between gap-4 items-center'>
-      <h1 className='text-xl'>{title}</h1>
-      <AddVehicule fields={fields} title={title.toLowerCase()} />
+    <header className='w-full flex justify-between gap-4 items-center flex-wrap'>
+      <h1 className='text-xl capitalize'>{title}</h1>
+      {/* {["vehicules", "deplacements"].includes(title) && <AddData fields={fields} title={title} />} */}
+      {["analytics"].includes(title) ? <RangeDatesAnalytics /> : <AddData fields={fields} title={title} />}
     </header>
   )
 }

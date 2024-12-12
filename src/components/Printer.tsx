@@ -1,36 +1,32 @@
 "use client"
 
-import React, { RefObject } from 'react';
-import { useReactToPrint } from 'react-to-print'
-import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card';
+import React, { useEffect, useState } from 'react';
+import { useReactToPrint } from 'react-to-print';
 import { PrinterIcon } from 'lucide-react';
-import { Table } from '@tanstack/react-table';
-import { VehiculeType } from '@/models/Vehicule';
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Button } from './ui/button';
 
+const Printer = () => {
+  const [contentRef, setContentRef] = useState({ current: null } as any);
+  const reactToPrintFn = useReactToPrint({
+    contentRef,
+    documentTitle: "Graphiques",
+  });
 
-const Printer = ({ contentRef, table, children }: { contentRef: RefObject<Element | Text>; table: Table<VehiculeType>; children: React.ReactNode }) => {
-  const reactToPrintFn = useReactToPrint({ contentRef });
+  useEffect(() => {
+    const current = document.querySelector('[data-chart=chart-graph]')?.parentElement;
+    setContentRef({ current })
+  }, [])
 
-  const print = () => {
-    table.setPageSize(6)
-    // (contentRef.current as Element)?.classList.remove("hidden");
+  const printData = () => {
+    console.log({ contentRef })
     reactToPrintFn();
-    // (contentRef.current as Element)?.classList.add("hidden");
-    table.setPageSize(5)
-
   }
 
   return (
-    <HoverCard openDelay={0} closeDelay={0}>
-      <HoverCardTrigger onClick={() => reactToPrintFn()} className='bg-primary text-white p-2 rounded-md cursor-pointer'>
-        <PrinterIcon />
-      </HoverCardTrigger>
-      <HoverCardContent>
-        {children}
-      </HoverCardContent>
-    </HoverCard>
+    <Button onClick={printData} className='bg-primary text-white p-4 rounded-md cursor-pointer print:hidden'>
+      <span>Imprimante</span>
+      <PrinterIcon />
+    </Button>
   )
 }
 
