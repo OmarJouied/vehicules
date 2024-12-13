@@ -31,8 +31,8 @@ const updateVehicule = async ({
 
   try {
     await deplacement.save();
-  } catch (error) {
-    throw new Error("Erreur lors de la mise a jour du document " + error.message)
+  } catch {
+    throw new Error("Erreur lors de la mise a jour du document")
   }
 }
 

@@ -27,8 +27,8 @@ const GET = wrapperEndPoints(async (req: any) => {
     }
 
     return Response.json({ prix }, { status: 200 })
-  } catch (err: any) {
-    return Response.json({ error: true, message: "Erreur de chargement des donnees " + err.message } as ResponseType, { status: 500 })
+  } catch {
+    return Response.json({ error: true, message: "Erreur de chargement des donnees" } as ResponseType, { status: 500 })
   }
 })
 

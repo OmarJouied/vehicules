@@ -29,8 +29,8 @@ const createDeplacement = async ({
       vidange, qte_carburant_ext, prix_carburant_ext, filter_changer,
     });
     return { matricule, _id: newDeplacement._id }
-  } catch (error: any) {
-    throw new Error("Erreur lors de la creation de ce document " + error.message);
+  } catch {
+    throw new Error("Erreur lors de la creation de ce document");
   }
 }
 

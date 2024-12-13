@@ -43,8 +43,8 @@ const createVehicule = async ({
       .map(item => ({ matricule, type_depense: item[0], valeur: item[1], date: new NormalDate(datemc as any).parse() })))
 
     return { matricule, _id: newVehicule._id }
-  } catch (err) {
-    throw new Error("Erreur lors de la creation de ce document " + err.message)
+  } catch {
+    throw new Error("Erreur lors de la creation de ce document")
   }
 }
 

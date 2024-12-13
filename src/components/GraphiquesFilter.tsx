@@ -6,7 +6,6 @@ import { contextGraphiques } from './GraphiquesContent';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { PrinterIcon, SearchIcon } from 'lucide-react';
 import { Button } from './ui/button';
-import { printGraph } from '@/utils/frontend-functions';
 import Printer from './Printer';
 
 const GraphiquesFilter = () => {
@@ -16,7 +15,6 @@ const GraphiquesFilter = () => {
     year: "",
     matricules: [],
   })
-  const ref = useRef()
 
   const router = useRouter();
   const pathname = usePathname();
@@ -44,13 +42,8 @@ const GraphiquesFilter = () => {
     )
   }
 
-  useEffect(() => console.log(ref), [])
   return (
-    <footer className='mt-4 w-full flex justify-between print:justify-center gap-4 items-center flex-wrap' ref={ref}>
-      {/* <img src="" alt="" />
-      <Button onClick={printGraph}>
-        <PrinterIcon />
-      </Button> */}
+    <footer className='mt-4 w-full flex justify-between print:justify-center gap-4 items-center flex-wrap'>
       <Printer />
       <form className='flex gap-4 items-center' onSubmit={handleSubmit}>
         <div className="max-w-sm">

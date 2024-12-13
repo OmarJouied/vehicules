@@ -27,7 +27,7 @@ const updateVehiculeTypeCarburant = async ({
 
   try {
     await prix.save();
-  } catch (error) {
+  } catch {
     throw new Error("Erreur lors de la mise a jour du document")
   }
 }

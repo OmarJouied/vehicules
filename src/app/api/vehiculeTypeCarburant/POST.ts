@@ -26,8 +26,8 @@ const createVehiculeTypeCarburant = async ({
     });
 
     return { matricule, _id: newVehiculeTypeCarburant._id }
-  } catch (err: any) {
-    throw new Error("Erreur lors de la creation de ce document " + err.message)
+  } catch {
+    throw new Error("Erreur lors de la creation de ce document")
   }
 }
 
