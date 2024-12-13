@@ -6,7 +6,7 @@ import { wrapperEndPoints } from "@/utils/backend-functions";
 
 const PATCH = wrapperEndPoints(async (req: Request) => {
   try {
-    const data: VehiculeType[] = await req.json();
+    const data: (VehiculeType & { type_carburant: string, vignte: number, taxe_tenage: number, assurance: number, visite_technique: number, carnet_metrologe: number, onssa: number, })[] = await req.json();
     await Promise.all(data.map(row => updateVehicule(row)));
 
     return Response.json({ error: false, message: "Mis a jour avec succes" } as ResponseType, { status: 202 });
@@ -21,7 +21,7 @@ const updateVehicule = async ({
   observation, prix_aquisiti, type, _id,
 
   type_carburant, vignte, taxe_tenage, assurance, visite_technique, carnet_metrologe, onssa
-}: VehiculeType) => {
+}: VehiculeType & { type_carburant: string, vignte: number, taxe_tenage: number, assurance: number, visite_technique: number, carnet_metrologe: number, onssa: number, }) => {
   const vehicule = await Vehicule.findById(_id);
   if (!vehicule) throw new Error("Ce document n'existe pas, pour modifier la matricule avec: " + matricule);
 
@@ -29,8 +29,6 @@ const updateVehicule = async ({
     matricule, affectation,
     dateachat, datemc, genre, marque, numchassis, poids,
     observation, prix_aquisiti, type,
-
-    // type_carburant, vignte, taxe_tenage, assurance, visite_technique, carnet_metrologe,
   }).forEach(item => {
     vehicule[item[0]] = item[1];
   });

@@ -20,7 +20,7 @@ const page = async () => {
 
   const resPrix = await GETPrix({} as Request);
   const { prix } = await resPrix.json();
-  console.log({ type_carburants: Array.from(new Set(prix.filter((p: any) => p.est_carburant).map((p: any) => p.prix_name))) })
+
   return (
     <MainContent
       data={vehiculeTypeCarburant.map((item: { date: any; }) => ({ ...item, date: new NormalDate(item.date as any).simplify() }))}

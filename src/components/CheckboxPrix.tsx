@@ -1,4 +1,3 @@
-import React from 'react'
 import { Checkbox } from './ui/checkbox'
 import { CheckedState } from '@radix-ui/react-checkbox'
 

@@ -31,8 +31,6 @@ const createVehicule = async ({
       matricule, affectation,
       dateachat, datemc, genre, marque, numchassis, poids,
       observation, prix_aquisiti, type,
-
-      // type_carburant, vignte, taxe_tenage, assurance, visite_technique, carnet_metrologe,
     });
 
     type_carburant && await VehiculeTypeCarburant.create({
