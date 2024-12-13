@@ -26,7 +26,7 @@ const createDeplacement = async ({
     const newDeplacement = await Deplacement.create({
       matricule, conductor, date: new NormalDate(date as any).parse(), destination,
       kilometrage, qte_carburant, qte_lub,
-      vidange, qte_carburant_ext, prix_carburant_ext, filter_changer,
+      vidange, qte_carburant_ext, prix_carburant_ext, filter_changer: (filter_changer as any) === "oui" ? true : undefined,
     });
     return { matricule, _id: newDeplacement._id }
   } catch {
