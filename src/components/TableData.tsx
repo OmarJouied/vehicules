@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ChevronDown, PrinterIcon } from "lucide-react"
+import { ArrowDown, ArrowUp, ChevronDown, PrinterIcon, SearchIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -40,6 +40,7 @@ import PageResize from "./PageResize"
 import ImportExcel from "./ImportExcel"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { context } from "@/containers/MainContent"
+import { useSearchParams } from "next/navigation"
 
 function useSkipper() {
   const shouldSkipRef = useRef(true)
@@ -58,6 +59,7 @@ function useSkipper() {
 }
 
 export function TableData({ columns, data, title }: { columns: ColumnDef<VehiculeType>[]; data: VehiculeType[]; title: string }) {
+  const search = useSearchParams();
   const { setCurrentData } = useContext(context) as any;
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
@@ -99,17 +101,6 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
         // Skip page index reset until after next rerender
         skipAutoResetPageIndex()
         setCurrentData((prev: any[]) => prev.map((p, idx) => ({ ...p, total: calculate[idx] ?? p.total })));
-        // setData(old =>
-        //   old.map((row, index) => {
-        //     if (index === rowIndex) {
-        //       return {
-        //         ...old[rowIndex]!,
-        //         [columnId]: value,
-        //       }
-        //     }
-        //     return row
-        //   })
-        // )
       },
     },
     debugTable: true,
@@ -126,11 +117,15 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
 
   const printTable = () => {
     const headers = table.getHeaderGroups()?.[0].headers.slice(1).map(head => head.id);
+    const du = search.get('du');
+    const au = search.get('au');
+    const dates = (du && au ? [du, au].join(' ... ') : du ?? au) ?? ""
     jsonToPdf(
-      "Fiche technique des vehicules",
+      `Fiche des ${title}`,
       table.getFilteredSelectedRowModel().rows.length > 0 ?
         table.getSelectedRowModel().rows.map(row => [...row.getVisibleCells().slice(1).map(cell => cell.getValue()), ...Array(headers.length - row.getVisibleCells().slice(1).map(cell => cell.getValue()).length).fill(0)]) : table.getRowModel().rows.map(row => [...row.getVisibleCells().slice(1).map(cell => cell.getValue()), ...Array(headers.length - row.getVisibleCells().slice(1).map(cell => cell.getValue()).length).fill(0)]),
-      [headers]
+      [headers],
+      dates
     );
   }
 
@@ -156,57 +151,22 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
         "onssa",
         "taxe_tenage",
         "val_carburant",
+        "val_carburant_ttc",
         "val_carburant_ext",
+        "val_carburant_ext_ttc",
         "val_lub",
+        "val_lub_ttc",
         "vignte",
         "visite_technique",
       ]);
       (table.options.meta as any)?.updateData(calculate);
     }
-  }, [table.getAllColumns().filter(col => col.getIsVisible()).length])
+  }, [table.getAllColumns().filter(col => col.getIsVisible()).length, table, title])
 
   return (
     <div className="w-full">
       <div className="flex flex-wrap items-center py-4 justify-between gap-4">
         <div className="flex flex-wrap gap-4 items-center">
-          <Input
-            placeholder={`Recherche par ${table.getAllColumns()?.[1]?.id}...`}
-            value={(table.getAllColumns()?.[1]?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getAllColumns()?.[1]?.setFilterValue(event.target.value.trim())
-            }
-            className="max-w-sm min-w-[235px] flex-1"
-          />
-          {title === "deplacements" && (
-            <>
-              <Input
-                placeholder={`Recherche par destination...`}
-                value={(table.getColumn("destination")?.getFilterValue() as string) ?? ""}
-                onChange={(event) =>
-                  table.getColumn("destination")?.setFilterValue(event.target.value.trim())
-                }
-                className="max-w-sm min-w-[200px] flex-1"
-              />
-              <Input
-                placeholder={`Recherche par conductor...`}
-                value={(table.getColumn("conductor")?.getFilterValue() as string) ?? ""}
-                onChange={(event) =>
-                  table.getColumn("conductor")?.setFilterValue(event.target.value.trim())
-                }
-                className="max-w-sm min-w-[200px] flex-1"
-              />
-            </>
-          )}
-          {title === "depensesSupplementaires" && (
-            <Input
-              placeholder={`Recherche par type_depense...`}
-              value={(table.getColumn("type_depense")?.getFilterValue() as string) ?? ""}
-              onChange={(event) =>
-                table.getColumn("type_depense")?.setFilterValue(event.target.value.trim())
-              }
-              className="max-w-sm min-w-[200px] flex-1"
-            />
-          )}
           {title === "vidange" && (
             <>
               <Label className="flex flex-col gap-2">
@@ -253,16 +213,6 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
               </Label>
             </>
           )}
-          {title === "analytics" && (
-            <Input
-              placeholder={`Recherche par marque...`}
-              value={(table.getColumn("marque")?.getFilterValue() as string) ?? ""}
-              onChange={(event) =>
-                table.getColumn("marque")?.setFilterValue(event.target.value.trim())
-              }
-              className="max-w-sm min-w-[200px] flex-1"
-            />
-          )}
         </div>
         <div className="flex flex-wrap justify-end items-center gap-2">
           <DropdownMenu>
@@ -281,8 +231,8 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                   <span>Imprimante</span>
                   <PrinterIcon />
                 </Button>
-                {table.getFilteredSelectedRowModel().rows.length > 0 && <DeleteItems ids={getIds(table as any)} target={title} table={table} />}
-                {table.getFilteredSelectedRowModel().rows.length > 0 && (
+                {table.getFilteredSelectedRowModel().rows.length > 0 && !["vidange", "analytics"].includes(title) && <DeleteItems ids={getIds(table as any)} target={title} table={table} />}
+                {table.getFilteredSelectedRowModel().rows.length > 0 && !["vidange", "analytics"].includes(title) && (
                   <EditData fields={columns.slice(1).map((col: any) => col.accessorKey)} data={table.getSelectedRowModel().rows.map(row => row.original)} target={title} table={table} />
                 )}
               </div>
@@ -291,7 +241,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button className="hover:bg-primary/80">
-                Visible <ChevronDown className="ml-2 h-4 w-4" />
+                Lignes <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="max-h-96 overflow-auto" align="end">
@@ -311,7 +261,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button className="hover:bg-primary/80">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
+                Colonnes <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="max-h-96 overflow-auto" align="end">
@@ -340,13 +290,56 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                  <TableHead
+                    key={header.id}
+                    {...(header.column.getCanSort() ? { className: "p-2 pt-0" } : { className: "!pr-2" })}
+                  >
+                    {header.column.getCanSort() ? <>
+                      <div
+                        onClick={header.column.getToggleSortingHandler()}
+                        className={header.column.getCanSort()
+                          ? 'cursor-pointer select-none px-2 py-2 text-center hover:bg-muted'
+                          : ''}
+                        title={
+                          header.column.getCanSort()
+                            ? header.column.getNextSortingOrder() === 'asc'
+                              ? 'Sort ascending'
+                              : header.column.getNextSortingOrder() === 'desc'
+                                ? 'Sort descending'
+                                : 'Clear sort'
+                            : undefined
+                        }
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                      </div>
+                      <div className="relative flex items-center rounded-md bg-background">
+                        <Input
+                          value={(table.getColumn(header.column.id)?.getFilterValue() as string) ?? ""}
+                          onChange={(event) => {
+                            table.getColumn(header.column.id)?.setFilterValue(event.target.value)
+                          }
+                          }
+                          className="px-0 border-l-4 border-r-0 border-transparent focus-visible:ring-transparent focus-visible:ring-offset-0"
+                        />
+                        <SearchIcon
+                          className="mx-1 max-w-3 max-h-3"
+                        />
+                      </div>
+
+                    </>
+                      :
+                      header.isPlaceholder
+                        ? null
+                        : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )
+                    }
                   </TableHead>
                 ))}
               </TableRow>
@@ -361,7 +354,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className={`whitespace-nowrap`}>
+                      <TableCell key={cell.id} className={`whitespace-nowrap ${cell.column.id !== "select" && "px-2"}`}>
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -376,7 +369,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className={`whitespace-nowrap`}>
+                    <TableCell key={cell.id} className={`whitespace-nowrap ${cell.column.id !== "select" && "px-2"}`}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

@@ -6,7 +6,7 @@ const DataHeader = ({ fields, title }: { fields: string[]; title: string }) => {
     <header className='w-full flex justify-between gap-4 items-center flex-wrap'>
       <h1 className='text-xl capitalize'>{title}</h1>
       {/* {["vehicules", "deplacements"].includes(title) && <AddData fields={fields} title={title} />} */}
-      {["analytics"].includes(title) ? <RangeDatesAnalytics /> : <AddData fields={fields} title={title} />}
+      {"analytics" === title ? <RangeDatesAnalytics /> : title !== "vidange" && <AddData fields={fields} title={title} />}
     </header>
   )
 }

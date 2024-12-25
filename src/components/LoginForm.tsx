@@ -9,28 +9,69 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { FormEventHandler, useState } from "react"
+import { signIn } from 'next-auth/react'
+import { useToast } from "@/hooks/use-toast"
+import { useRouter, useSearchParams } from "next/navigation"
 
 export function LoginForm() {
+  const [userData, setUserData] = useState({
+    nom: "", password: ""
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogin: FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const res = await signIn("credentials", {
+        nom: userData.nom,
+        password: userData.password,
+        redirect: false,
+      });
+
+      if (!res?.ok) {
+        throw new Error("Nom ou Password ne pas vrais");
+      }
+
+      toast({
+        title: "Login avec succes",
+        className: 'bg-success'
+      })
+      router.push(location.search.split('=').slice(1).join("=") || '/')
+    } catch (error: any) {
+      toast({
+        title: "Erreur des donnees.",
+        description: error.message,
+        variant: "destructive"
+      })
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
-    <Card className="mx-auto max-w-sm">
+    <Card className="mx-auto max-w-lg shadow-lg">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold">Login</CardTitle>
-        <CardDescription>Enter your email and password to login to your account</CardDescription>
+        <CardDescription>Enter your nom and password to login to your account</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <form className="space-y-4" onSubmit={handleLogin}>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="m@example.com" required />
+            <Label htmlFor="nom">Nom</Label>
+            <Input id="nom" type="text" required value={userData.nom} onChange={({ target: { value } }) => setUserData(prev => ({ ...prev, nom: value }))} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required />
+            <Input id="password" type="password" required value={userData.password} onChange={({ target: { value } }) => setUserData(prev => ({ ...prev, password: value }))} />
           </div>
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" disabled={isLoading}>
             Login
           </Button>
-        </div>
+        </form>
       </CardContent>
     </Card>
   )

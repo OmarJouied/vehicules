@@ -6,18 +6,17 @@ import autoTable from "jspdf-autotable"
 import { utils, writeFile } from "xlsx"
 import InputOTPDate from "../components/InputOTPDate"
 import InputDate from "../components/InputDate"
-import { Input } from "@/components/ui/input"
-import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { ChevronDown } from "lucide-react"
 import { SelectChoise } from "@/components/SelectChoise"
 import { SearchSelectChoise } from "@/components/SearchSelectChoise"
 import { DeplacementType } from "@/models/Deplacement"
-import { Checkbox } from "@/components/ui/checkbox"
 import CheckboxPrix from "@/components/CheckboxPrix"
 import { VehiculeTypeCarburantType } from "@/models/VehiculeTypeCarburant"
 import { DepenseSupplementaireType } from "@/models/DepenseSupplementaire"
-import html2canvas from "html2canvas"
+import { UserType } from "@/models/User"
+import PasswordInput from "@/components/PasswordInput"
+import { pages } from "@/consts"
+import { RechangeType } from "@/models/Rechange"
+import { TaxeType } from "@/models/Taxe"
 
 export const getIds = (table: Table<{ _id: string }>) => {
   return table.getSelectedRowModel().rows.map(row => row.original._id)
@@ -29,45 +28,58 @@ export const recalcule = (table: Table<any>, fields: string[]) => {
     .map(row => ([[row.id], fieldsToCalcule.map(field => row.original[field]).reduce((prev, next) => prev + +next, 0).toFixed(2)])))
 }
 
-export const jsonToPdf = (title: string, body: string[][], head: string[][]) => {
-  const doc = new jsPDF("p", "mm", "a4")
+export const jsonToPdf = (title: string, body: string[][], head: string[][], date?: any) => {
+  const doc = new jsPDF("portrait");
 
-  doc.setFontSize(12)
-  doc.setFillColor(120, 120, 120)
-  doc.text(title, doc.internal.pageSize.getWidth() / 2, 10, {
-    align: "center"
-  })
-  doc.setDisplayMode("fullwidth")
-  autoTable(doc, {
-    head,
-    body,
-    margin: {
-      left: 4, right: 4
-    },
-    styles: {
-      fontSize: 4.5,
-      cellPadding: 1,
-      overflow: "linebreak",
-      cellWidth: "wrap",
-      halign: "justify",
-      lineWidth: .1,
-      fontStyle: "normal"
-    },
-    headStyles: {
-      // fontSize: 4,
-      cellPadding: 1,
-      overflow: "linebreak",
-      cellWidth: "wrap",
-      halign: "center",
-      // lineColor: '#000',
-      lineWidth: .1,
-      fontStyle: "bold"
+  const img = new Image;
+  img.onload = function () {
+    doc.addImage(this as any, 'JPEG', 10, 10, 15, 12);
+    doc.setFontSize(12);
+    doc.setFillColor(120, 120, 120);
+    doc.text(title, doc.internal.pageSize.getWidth() / 2, 10, {
+      align: "center"
+    })
+    doc.setFontSize(6);
+    doc.setFillColor(120, 120, 120);
+    doc.text(date, 6, 10, {
+      align: "left"
+    })
 
-    },
-  })
+    doc.setDisplayMode("fullwidth")
+    autoTable(doc, {
+      head,
+      body,
+      margin: {
+        left: 4, right: 4
+      },
+      styles: {
+        fontSize: 4.5,
+        cellPadding: 1,
+        overflow: "linebreak",
+        cellWidth: "wrap",
+        halign: "justify",
+        lineWidth: .1,
+        fontStyle: "normal"
+      },
+      headStyles: {
+        // fontSize: 4,
+        cellPadding: 1,
+        overflow: "linebreak",
+        cellWidth: "wrap",
+        halign: "center",
+        // lineColor: '#000',
+        lineWidth: .1,
+        fontStyle: "bold"
 
-  doc.autoPrint()
-  doc.output("dataurlnewwindow")
+      },
+    })
+
+    doc.autoPrint();
+    doc.output("dataurlnewwindow");
+  };
+
+  img.crossOrigin = "";
+  img.src = "/banana.jpeg";
 }
 
 export const toXlsx = (title: string, data: any[]) => {
@@ -130,28 +142,6 @@ export const printJSONTable = (header: string[], data: any[]) => {
   console.log({ innerwidth: wind?.innerWidth, outerwidth: wind?.outerWidth })
 }
 
-export const printGraph = async () => {
-  const element = document.querySelector("[data-chart=chart-graph]");
-  if (!element) return;
-
-  const canvas = await html2canvas(element as any);
-  const data = canvas.toDataURL("image/png");
-
-  return data
-
-  const pdfDoc = new jsPDF(
-    //   {
-    //   orientation: "landscape",
-    //   unit: "px",
-    //   format: "a4"
-    // }
-  );
-  pdfDoc.addImage(data, 'PNG', 0, 0, 100, 100);
-
-  pdfDoc.autoPrint();
-  pdfDoc.output("dataurlnewwindow")
-}
-
 export class SpecificActions {
   target: "prix" | "vehicules";
   vehicules: any
@@ -161,8 +151,37 @@ export class SpecificActions {
   vehiculeTypeCarburant: any
   depensesSupplementaires: any
   vidange: any
+  users: any
+  rechanges: any
+  taxe: any
 
   constructor(target: "prix" | "vehicules") {
+    this.users = {
+      defaultData: {
+        nom: "", password: "", email: "", phone: "", date: "", ...Object.fromEntries(pages.map(page => [page, ""]))
+      },
+      requiredField: ["nom", "password", "email",],
+      inputsSpecial(data: any, setData: any) {
+        return {
+          date: InputOTPDate({
+            date: data.date ? data.date + "" : "",
+            setDate: (value: any) => setData((prev: any) => ({ ...prev, date: value }))
+          }),
+          password: PasswordInput({ data, setData, }),
+        }
+      },
+      validate(data: UserType) {
+        if (!data.nom) return "Merci de remplir le champ nom.";
+        if (!data.password) return "Merci de remplir le champ password.";
+        if (data.password.length < 8) return "Entrez une password avec longueur superieure ou egale a 8.";
+        if (!data.email) return "Merci de remplir le champ email.";
+        if (!data.email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) return "Entrez un email valide.";
+        if (data.date && !(data.date + "").match(/^\d{2}\/\d{2}\/\d{4}$/)) return "Entrez une date valide pour date.";
+      },
+      getFields(fields: string[]) {
+        return fields;
+      },
+    };
     this.vehicules = {
       defaultData: {
         matricule: "", affectation: "", assurance: 0, carnet_metrologe: 0, dateachat: "",
@@ -264,10 +283,7 @@ export class SpecificActions {
       },
     };
     this.vidange = {
-      defaultData: {
-        matricule: "",
-        kilometrage: 0,
-      },
+      defaultData: {},
       requiredField: [],
       inputsSpecial() {
         return {}
@@ -286,7 +302,6 @@ export class SpecificActions {
       },
       requiredField: ["prix_name", "prix_valeur"],
       inputsSpecial(data: { date: string; est_carburant?: boolean }, setData: any) {
-        console.log({ data })
         return {
           date: InputOTPDate({
             date: data.date ? data.date + "" : "",
@@ -296,32 +311,52 @@ export class SpecificActions {
         }
       },
       validate(data: PrixType) {
-        console.log({ data })
         if (!data.prix_name) return "Merci de remplir le champ prix_name.";
-        if (!data.prix_valeur || data.prix_valeur < 0) return "Entrez une valeur positive pour vidange.";
+        if (!data.prix_valeur || data.prix_valeur < 0) return "Entrez une valeur positive pour prix_valeur.";
         if (data.date && !`${data.date}`.match(/^\d{2}\/\d{2}\/\d{4}$/)) return "Entrez une valide valeur pour date.";
       },
       getFields(fields: string[]) {
         return [...fields, "est_carburant"];
       }
     };
+    this.taxe = {
+      defaultData: {
+        taxe_name: "",
+        taxe_valeur: 10,
+        date: '//'
+      },
+      requiredField: ["taxe_name", "taxe_valeur"],
+      inputsSpecial(data: TaxeType, setData: any, choises?: any) {
+        return {
+          taxe_name: SelectChoise({
+            choises: choises ?? [],
+            label: "option",
+            value: data.taxe_name,
+            onChange: ({ target: { value } }) => setData((prev: any) => ({ ...prev, taxe_name: value })),
+          }),
+          date: InputOTPDate({
+            date: data.date ? data.date + "" : "",
+            setDate: (value: any) => setData((prev: any) => ({ ...prev, date: value }))
+          }),
+        }
+      },
+      validate(data: TaxeType) {
+        if (!data.taxe_name) return "Merci de remplir le champ taxe_name.";
+        if (!data.taxe_valeur || data.taxe_valeur < 0) return "Entrez une valeur positive pour taxe_valeur.";
+        if (data.date && !`${data.date}`.match(/^\d{2}\/\d{2}\/\d{4}$/)) return "Entrez une valide valeur pour date.";
+      },
+      getFields(fields: string[]) {
+        return fields;
+      }
+    };
     this.analytics = {
       defaultData: {
-        type_carburant: {
-          diesel: 0,
-          essence_ksar: 0,
-          essence_tetouan: 0,
-        },
-        lub: 0
       },
-      requiredField: ["type_carburant", "valeur"],
+      requiredField: [],
       inputsSpecial() {
         return {}
       },
-      validate(data: any) {
-        for (const item of Object.values(data)) {
-          if (!(item + "").match(/^\d*\.?\d*$/)) return "Merci de obtenir une valeur numerique superieure.";
-        }
+      validate() {
       },
       getFields(fields: string[]) {
         return fields;
@@ -336,7 +371,6 @@ export class SpecificActions {
       },
       requiredField: ["matricule", "type_depense", "valeur", "date",],
       inputsSpecial(data: { date: string; matricule: string; type_depense: string }, setData: any, choises: any) {
-        console.log({ data })
         return {
           date: InputOTPDate({
             date: data.date ? data.date + "" : "",
@@ -394,9 +428,43 @@ export class SpecificActions {
         }
       },
       validate(data: VehiculeTypeCarburantType) {
-        console.log({ data })
         if (!data.matricule) return "Merci de remplir le champ matricule.";
         if (!data.type_carburant) return "Merci de remplir le champ type_carburant.";
+        if (data.date && !`${data.date}`.match(/^\d{2}\/\d{2}\/\d{4}$/)) return "Entrez une valide valeur pour date.";
+      },
+      getFields(fields: string[]) {
+        return fields;
+      }
+    };
+    this.rechanges = {
+      defaultData: {
+        matricule: "",
+        date: '//'
+      },
+      requiredField: ["matricule"],
+      inputsSpecial(data: { matricule: string; type_carburant: string; date: string; est_carburant?: boolean }, setData: any, choises: any) {
+        return {
+          // date: InputOTPDate({
+          //   date: data.date ? data.date + "" : "",
+          //   setDate: (value: any) => setData((prev: any) => ({ ...prev, date: value }))
+          // }),
+          // matricule: SearchSelectChoise({
+          //   name: "matricule",
+          //   choises: (choises.matricules ?? []),
+          //   value: data.matricule as string,
+          //   onChange: ({ target: { value } }) => setData((prev: any) => ({ ...prev, matricule: value })),
+          // }),
+          // type_carburant: SearchSelectChoise({
+          //   name: "type_carburant",
+          //   choises: (choises.type_carburants ?? []),
+          //   value: data.type_carburant as string,
+          //   onChange: ({ target: { value } }) => setData((prev: any) => ({ ...prev, type_carburant: value })),
+          // }),
+        }
+      },
+      validate(data: RechangeType) {
+        if (!data.n_bon) return "Merci de remplir le champ matricule.";
+        if (!data.consommateurs.length) return "Merci de remplir le champ destination.";
         if (data.date && !`${data.date}`.match(/^\d{2}\/\d{2}\/\d{4}$/)) return "Entrez une valide valeur pour date.";
       },
       getFields(fields: string[]) {

@@ -31,7 +31,10 @@ export const columns: (value: string[]) => ColumnDef<VehiculeType>[] = (vehicule
     accessorKey: title,
     header: title.toUpperCase(),
     cell: ({ row }: { row: any }) => (
-      <div className="capitalize">{row.getValue(title)}</div>
+      <div className="">{row.getValue(title)}</div>
     ),
+    filterFn: (row: any, id: any, value: any) => {
+      return `${row.original[id] ?? ""}`.toLowerCase().includes(value.toLowerCase());
+    },
   })),
 ]

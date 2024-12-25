@@ -1,6 +1,7 @@
 import MainContent from "@/containers/MainContent";
 import GET from "../api/vidange/GET";
 import { Metadata } from "next";
+import Unauthorize from "@/components/Unauthorize";
 
 export const metadata: Metadata = {
   title: 'Vidange'
@@ -13,8 +14,12 @@ export default async function Home() {
     "vidange_changer",
     "filter_changer",
   ];
-  const res = await GET({} as Request);
-  const { vidangeState } = await res.json();
+  const res = await GET({ url: "/vidange", method: 'GET' } as Request);
+  const { vidangeState, message } = await res.json();
+
+  if (message) {
+    return <Unauthorize message={message} />
+  }
 
   return (
     <MainContent

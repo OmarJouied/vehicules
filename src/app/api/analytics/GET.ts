@@ -1,11 +1,12 @@
 import Prix from "@/models/Prix";
+import Taxe from "@/models/Taxe";
 import Vehicule from "@/models/Vehicule";
 import ResponseType from "@/types/ResponseType";
 import { NormalDate, simplifyAnalytics, wrapperEndPoints } from "@/utils/backend-functions";
 
 const GET = wrapperEndPoints(async (req: Request) => {
   try {
-    const { searchParams } = new URL(req.url)
+    const { searchParams } = new URL(`http://localhost/${req.url}`)
     const du = new NormalDate(searchParams.get("du") ?? "").parse() ?? "";
     const au = new NormalDate(searchParams.get("au") ?? "").parse() ?? "";
     let start = du > au ? au : du;
@@ -84,12 +85,15 @@ const GET = wrapperEndPoints(async (req: Request) => {
       },
     ]).project({ matricule: 1, marque: 1, typecarburants: 1, vehiculeDeplacements: 1, vehiculeDepenseSupplementaires: 1, _id: 0 });
     const prix = await Prix.find().sort({ date: -1 });
+    const taxe = await Taxe.find().sort({ date: -1 });
 
     return Response.json({
       analytics: analytics
+        // .filter(row => row.matricule === '001246-44')
         .map(row => simplifyAnalytics(
           row,
-          prix
+          prix,
+          taxe
         ))
     }, { status: 200 })
   } catch {

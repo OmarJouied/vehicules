@@ -36,7 +36,7 @@ const createVehicule = async ({
     type_carburant && await VehiculeTypeCarburant.create({
       matricule, type_carburant, date: dateachat
     })
-    console.log({ depenseSupplementaire: JSON.parse(JSON.stringify({ vignte, taxe_tenage, assurance, visite_technique, carnet_metrologe, onssa })) })
+
     await DepenseSupplementaire.insertMany(Object.entries(JSON.parse(JSON.stringify({ vignte, taxe_tenage, assurance, visite_technique, carnet_metrologe, onssa })))
       .map(item => ({ matricule, type_depense: item[0], valeur: item[1], date: new NormalDate(datemc as any).parse() })))
 

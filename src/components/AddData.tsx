@@ -27,7 +27,7 @@ const AddData = ({ title, fields }: { title: string; fields: string[] }) => {
     // return;
     if (description) {
       return toast({
-        title: "Erreur de donnees.",
+        title: "Erreur des donnees.",
         description,
         variant: "destructive"
       });
@@ -43,7 +43,7 @@ const AddData = ({ title, fields }: { title: string; fields: string[] }) => {
 
     if (!res.ok) {
       toast({
-        title: "Erreur de donnees.",
+        title: "Erreur des donnees.",
         description: message,
         variant: "destructive"
       })
@@ -52,7 +52,7 @@ const AddData = ({ title, fields }: { title: string; fields: string[] }) => {
         title: message,
         className: 'bg-success'
       })
-      setCurrentData((prev: any) => [refData ? { ...data, _id: refData[0]._id } : data, ...prev].sort(title === "deplacements" ? undefined : (a: any, b: any) => {
+      setCurrentData((prev: any) => [refData ? { ...data, _id: refData[0]._id, ...(title === "users" ? { password: "xxxxxxxxxx" } : {}) } : data, ...prev].sort(title === "deplacements" ? undefined : (a: any, b: any) => {
         if (a.matricule > b.matricule) return 1;
         if (a.matricule < b.matricule) return -1;
         return 0;
@@ -66,7 +66,7 @@ const AddData = ({ title, fields }: { title: string; fields: string[] }) => {
       ...prev, carburant_valeur: externalData.vehiculeCurburants.find((v: any) => v.matricule === data.matricule)?.carburantValeur,
       lub_valeur: externalData.lub
     })))
-  }, [data.matricule]);
+  }, [data.matricule, externalData?.lub, externalData?.vehiculeCurburants, title]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

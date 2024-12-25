@@ -45,7 +45,6 @@ export function GraphiquesMatriculesChoise({ choises, values, onChange }: { choi
                   key={choise}
                   value={choise}
                   onSelect={(currentValue) => {
-                    console.log({ currentValue, values })
                     onChange((prev: any) => ({
                       ...prev, matricules:
                         prev.matricules.includes(currentValue) ? prev.matricules.filter((p: string) => p !== currentValue) : [...prev.matricules, currentValue]

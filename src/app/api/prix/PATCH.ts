@@ -17,7 +17,7 @@ const updatePrix = async ({
   date, prix_name, prix_valeur, est_carburant, _id
 }: PrixType & { _id: string }) => {
   const prix = await Prix.findById(_id);
-  if (!prix) throw new Error("Ce document n'existe pas, pour modifier la matricule avec: " + prix_name + " et " + date);
+  if (!prix) throw new Error("Ce document n'existe pas, pour modifier le prix_name avec: " + prix_name + " et " + date);
 
   Object.entries({
     date: new NormalDate(date as any).parse(), prix_name, prix_valeur, est_carburant

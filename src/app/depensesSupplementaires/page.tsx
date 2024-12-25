@@ -5,6 +5,7 @@ import GETMatricules from "../api/vehicules/GET";
 import { VehiculeType } from "@/models/Vehicule";
 import { NormalDate } from "@/utils/backend-functions";
 import { Metadata } from "next";
+import Unauthorize from "@/components/Unauthorize";
 
 export const metadata: Metadata = {
   title: 'Depenses Supplementaires'
@@ -12,8 +13,12 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const vehiculeColumns: string[] = Object.keys(DepenseSupplementaire.schema.paths).filter(path => !path.startsWith("_"));
-  const res = await GET({} as Request);
-  const { depensesSupplementaires } = await res.json();
+  const res = await GET({ url: '/depensesSupplementaires', method: 'GET' } as Request);
+  const { depensesSupplementaires, message } = await res.json();
+
+  if (message) {
+    return <Unauthorize message={message} />
+  }
 
   const resMatricules = await GETMatricules({} as Request);
   const { vehicules }: { vehicules: VehiculeType[] } = await resMatricules.json();

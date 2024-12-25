@@ -1,7 +1,7 @@
 import NavBar from '@/components/NavBar'
 import Link from 'next/link'
 
-const Header = () => {
+const Header = async () => {
   return (
     <header>
       <div className="container flex justify-between items-center gap-2.5">

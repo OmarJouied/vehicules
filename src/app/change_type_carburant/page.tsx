@@ -5,6 +5,7 @@ import GETVehicules from "../api/vehicules/GET";
 import GETPrix from "../api/prix/GET";
 import VehiculeTypeCarburant from "@/models/VehiculeTypeCarburant";
 import { Metadata } from "next";
+import Unauthorize from "@/components/Unauthorize";
 
 export const metadata: Metadata = {
   title: 'Vehicule Type Carburant'
@@ -12,8 +13,12 @@ export const metadata: Metadata = {
 
 const page = async () => {
   const vehiculeTypeCarburantColumns: string[] = Object.keys(VehiculeTypeCarburant.schema.paths).filter(path => !path.startsWith("_"));;
-  const res = await GET({} as Request);
+  const res = await GET({ url: '/vehiculeTypeCarburant', method: 'GET' } as Request);
   const { vehiculeTypeCarburant, message } = await res.json();
+
+  if (message) {
+    return <Unauthorize message={message} />
+  }
 
   const resMatricules = await GETVehicules({} as Request);
   const { vehicules } = await resMatricules.json();

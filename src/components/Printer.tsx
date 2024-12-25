@@ -18,7 +18,6 @@ const Printer = () => {
   }, [])
 
   const printData = () => {
-    console.log({ contentRef })
     reactToPrintFn();
   }
 

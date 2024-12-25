@@ -8,6 +8,7 @@ import { NormalDate } from "@/utils/backend-functions";
 import { VehiculeType } from "@/models/Vehicule";
 import { VehiculeTypeCarburantType } from "@/models/VehiculeTypeCarburant";
 import { Metadata } from "next";
+import Unauthorize from "@/components/Unauthorize";
 
 export const metadata: Metadata = {
   title: 'Deplacements'
@@ -15,16 +16,20 @@ export const metadata: Metadata = {
 
 const page = async () => {
   const deplacementColumns: string[] = Object.keys(Deplacement.schema.paths).filter(path => !path.startsWith("_"));
-  const res = await GET({} as Request);
-  const { deplacements } = await res.json();
+  const res = await GET({ url: '/deplacements', method: 'GET' } as Request);
+  const { deplacements, message } = await res.json();
+
+  if (message) {
+    return <Unauthorize message={message} />
+  }
 
   const resVehicule = await GETVehicule({} as any);
-  const { vehicules }: { vehicules: VehiculeType[] } = await resVehicule.json();
+  const { vehicules }: { vehicules: VehiculeType[], message?: string } = await resVehicule.json();
 
   const resVehiculeTypeCarburant = await GETVehiculeTypeCarburant({} as any);
   const { vehiculeTypeCarburant }: { vehiculeTypeCarburant: VehiculeTypeCarburantType[] } = await resVehiculeTypeCarburant.json();
 
-  const resPrix = await GETPrix({ nextUrl: new URL('https://vehicules.com/?currentPrix=1') } as any);
+  const resPrix = await GETPrix({ url: '?currentPrix=1' } as any);
   const { prix } = await resPrix.json();
 
   const prixCurburant = prix.filter((item: any) => item.prix.est_carburant)

@@ -1,11 +1,51 @@
+import { options } from "@/app/api/auth/[...nextauth]/options";
+import { pages } from "@/consts";
 import { connectDB } from "@/lib/db";
 import { DepenseSupplementaireType } from "@/models/DepenseSupplementaire";
 import { DeplacementType } from "@/models/Deplacement";
 import { PrixType } from "@/models/Prix";
+import { RechangeType } from "@/models/Rechange";
+import { TaxeType } from "@/models/Taxe";
+import ResponseType from "@/types/ResponseType";
+import { getServerSession } from "next-auth";
 
 export const wrapperEndPoints = (endpoint: (req: Request) => Promise<Response>) => async (req: Request) => {
   await connectDB();
+  const session = await getServerSession(options);
+  const actionPath = req?.url?.split('/')?.pop()?.split("?")?.[0] ?? "";
+  const method = req.method;
+  const { permissions } = session?.user ?? { permissions: null };
+
+  if (actionPath && method && permissions !== "*" && permissions[actionPath] !== "*" && !permissions[actionPath]?.includes(method)) return Response.json({ error: true, message: "Unauthorize" } as ResponseType, { status: 401 })
+
   return endpoint(req);
+}
+
+export const simplifyRechanges = (rechange: RechangeType) => {
+  const rechangeSimplified: any[] = [];
+  rechange.products.forEach(product => {
+    const productBase = {
+      n_bon: rechange.n_bon,
+      date: new NormalDate(rechange.date as any).simplify(),
+      specification: product.specification,
+      reference: product.reference,
+      qte: product.qte,
+      prix_unitere: product.prix_unitere,
+    };
+
+    rechange.consommateurs.forEach(consommateur => rechangeSimplified.push(
+      {
+        ...productBase,
+        matricule: consommateur.matricule,
+        destination: consommateur.destination,
+      }
+    ));
+  });
+  return rechangeSimplified
+}
+
+export const simplifyPermissions = (permissions: any) => {
+  return permissions ? (permissions === "*" ? Object.fromEntries(pages.map(page => ([page, 'Tous']))) : Object.fromEntries(Object.entries(permissions).map(permission => [permission[0], permission[1] === "*" ? "Tous" : (permission[1] as string[]).join(', ').replace('GET', 'Lire').replace('POST', 'Ecrire').replace('PATCH', 'Modifier').replace('DELETE', 'Supprimer')]))) : Object.fromEntries(pages.map(page => ([page, ''])))
 }
 
 export const simplifyAnalytics = ({
@@ -16,20 +56,37 @@ export const simplifyAnalytics = ({
   vehiculeDepenseSupplementaires,
 }:
   { matricule: string, marque: string, typecarburants: { date: Date; type_carburant: string }[], vehiculeDeplacements: DeplacementType[], vehiculeDepenseSupplementaires: DepenseSupplementaireType[] },
-  prix: PrixType[]
+  prix: PrixType[],
+  taxe: TaxeType[]
 ) => {
-  // return { typecarburants }
   const prix_lub = prix.filter(pr => pr.prix_name === "lub");
   const prix_carburant = prix.filter(pr => pr.prix_name !== "lub"); // يجب تحديثها لتتماشى مع تغيير مكان العربة
+  const carburant_base = typecarburants[0].type_carburant;
+
+  const getTaxeCarb = (date: any) => {
+    return taxe.find(t => t.taxe_name === carburant_base && t.date <= date!)?.taxe_valeur ?? 0;
+  }
 
   let qte_lub = 0,
     vidange = 0,
+
+    curr_val_lub = 0,
+    val_lub_ttc = 0,
     val_lub = 0,
-    qte_carburant = 0,
+
+    curr_val_carburant = 0,
+    val_carburant_ttc = 0,
     val_carburant = 0,
+
     kilometrage = 0,
+    qte_carburant = 0,
     qte_carburant_ext = 0,
+
+    curr_val_carburant_ext = 0,
+    val_carburant_ext_ttc = 0,
     val_carburant_ext = 0;
+
+  // (PRIX_VALEUR/(1+(ttc/100))).toFixed(2)
 
   vehiculeDeplacements.forEach(vehiculeDeplacement => {
     kilometrage += vehiculeDeplacement.kilometrage ?? 0;
@@ -37,9 +94,24 @@ export const simplifyAnalytics = ({
     vidange += vehiculeDeplacement.vidange ?? 0;
     qte_carburant += vehiculeDeplacement.qte_carburant ?? 0;
     qte_carburant_ext += vehiculeDeplacement.qte_carburant_ext ?? 0;
-    val_lub += (prix_lub.find(p => p.date <= (vehiculeDeplacement.date ?? 0))?.prix_valeur ?? 0) * ((vehiculeDeplacement.qte_lub ?? 0) + (vehiculeDeplacement.vidange ?? 0));
-    val_carburant += (prix_carburant.filter(p => typecarburants.find(typecarburant => typecarburant.date <= vehiculeDeplacement.date!)?.type_carburant === p.prix_name).find(p => p.date <= (vehiculeDeplacement.date ?? 0))?.prix_valeur ?? 0) * (vehiculeDeplacement.qte_carburant ?? 0);
-    val_carburant_ext += (vehiculeDeplacement.qte_carburant_ext ?? 0) * (vehiculeDeplacement.prix_carburant_ext ?? 0);
+
+    curr_val_lub = (prix_lub.find(p => p.date <= (vehiculeDeplacement.date ?? 0))?.prix_valeur ?? 0) * ((vehiculeDeplacement.qte_lub ?? 0) + (vehiculeDeplacement.vidange ?? 0));
+    val_lub_ttc += curr_val_lub;
+    val_lub += curr_val_lub / (1 + (taxe.find(t => t.taxe_name === 'lub' && t.date <= vehiculeDeplacement.date!)?.taxe_valeur ?? 0) / 100);
+    // console.log({ taxe: taxe.find(t => t.taxe_name === 'lub' && t.date <= vehiculeDeplacement.date!)?.taxe_valeur ?? 0 })
+    curr_val_carburant = (
+      prix_carburant.filter(
+        p => typecarburants.find(
+          typecarburant => typecarburant.date <= vehiculeDeplacement.date!
+        )?.type_carburant === p.prix_name
+      ).find(p => p.date <= (vehiculeDeplacement.date ?? 0))?.prix_valeur ?? 0
+    ) * (vehiculeDeplacement.qte_carburant ?? 0);
+    val_carburant_ttc += curr_val_carburant;
+    val_carburant += curr_val_carburant / (1 + (getTaxeCarb(vehiculeDeplacement.date) / 100));
+
+    curr_val_carburant_ext = (vehiculeDeplacement.qte_carburant_ext ?? 0) * (vehiculeDeplacement.prix_carburant_ext ?? 0);
+    val_carburant_ext_ttc += curr_val_carburant_ext;
+    val_carburant_ext += curr_val_carburant_ext / (1 + (getTaxeCarb(vehiculeDeplacement.date) / 100));
   })
 
   return Object.fromEntries(Object.entries({
@@ -49,10 +121,13 @@ export const simplifyAnalytics = ({
     "con%": (qte_carburant * 100 / (kilometrage || 1)).toFixed(1),
     qte_lub: qte_lub.toFixed(2),
     vidange: vidange.toFixed(2),
+    val_lub_ttc: val_lub_ttc.toFixed(2),
     val_lub: val_lub.toFixed(2),
     qte_carburant: qte_carburant.toFixed(2),
+    val_carburant_ttc: val_carburant_ttc.toFixed(2),
     val_carburant: val_carburant.toFixed(2),
     qte_carburant_ext: qte_carburant_ext.toFixed(2),
+    val_carburant_ext_ttc: val_carburant_ext_ttc.toFixed(2),
     val_carburant_ext: val_carburant_ext.toFixed(2),
     ...Object.fromEntries([
       ["visite_technique", "0.00"],
@@ -63,7 +138,7 @@ export const simplifyAnalytics = ({
       ["onssa", "0.00"],
       ...vehiculeDepenseSupplementaires.map(item => [item._id, (item.valeur).toFixed(2)])
     ]),
-    total: (val_lub + val_carburant + val_carburant_ext + vehiculeDepenseSupplementaires.map(item => item.valeur).reduce((prev, curr) => prev + curr, 0)).toFixed(2)
+    total: (val_lub + val_lub_ttc + val_carburant + val_carburant_ttc + val_carburant_ext + val_carburant_ext_ttc + vehiculeDepenseSupplementaires.map(item => item.valeur).reduce((prev, curr) => prev + curr, 0)).toFixed(2)
   }).map(item => [item[0], item[1] ?? 0]))
 }
 

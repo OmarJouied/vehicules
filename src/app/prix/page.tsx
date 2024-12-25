@@ -2,6 +2,7 @@ import MainContent from "@/containers/MainContent"
 import GET from "../api/prix/GET";
 import { NormalDate } from "@/utils/backend-functions";
 import { Metadata } from "next";
+import Unauthorize from "@/components/Unauthorize";
 
 export const metadata: Metadata = {
   title: 'Prix'
@@ -9,8 +10,12 @@ export const metadata: Metadata = {
 
 const page = async () => {
   const prixColumns: string[] = ["prix_name", "prix_valeur", "date",];
-  const res = await GET({} as Request);
+  const res = await GET({ url: '/prix', method: 'GET' } as Request);
   const { prix, message } = await res.json();
+
+  if (message) {
+    return <Unauthorize message={message} />
+  }
 
   return (
     <MainContent

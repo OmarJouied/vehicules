@@ -20,15 +20,14 @@ const RangeDatesAnalytics = () => {
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    console.log({ pathname, rangeDates })
-    router.push(pathname + '?' + Object.entries(rangeDates).map(date => `${date[0]}=${decodeURIComponent(date[1])}`).join("&"))
+    router.push(pathname + '?' + Object.entries(rangeDates).map(date => `${date[0]}=${encodeURIComponent(date[1])}`).join("&"))
   }
 
   useEffect(() => {
-    const du = searchParams.get('du');
-    const au = searchParams.get('au');
+    const du = decodeURIComponent(searchParams.get('du') ?? "");
+    const au = decodeURIComponent(searchParams.get('au') ?? "");
 
-    setRangeDates({ du: du ?? "", au: au ?? "" });
+    setRangeDates({ du, au });
   }, [searchParams])
 
   return (

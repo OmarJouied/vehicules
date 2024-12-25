@@ -38,7 +38,7 @@ export default function EditData({ data, fields, editAction, target, table }: { 
 
       if (description) {
         return toast({
-          title: "Erreur de donnees.",
+          title: "Erreur des donnees.",
           description,
           variant: "destructive"
         });
@@ -53,7 +53,7 @@ export default function EditData({ data, fields, editAction, target, table }: { 
 
     if (!res.ok) {
       toast({
-        title: "Erreur de donnees.",
+        title: "Erreur des donnees.",
         description: message,
         variant: "destructive"
       })
@@ -66,7 +66,7 @@ export default function EditData({ data, fields, editAction, target, table }: { 
       setRootData((prev: any) => {
         for (const element of currentData) {
           const absoluteIndex = prev.findIndex((item: any) => item._id === element._id);
-          prev = [...prev.slice(0, absoluteIndex), element, ...prev.slice(absoluteIndex + 1)];
+          prev = [...prev.slice(0, absoluteIndex), target === "users" ? { ...element, password: "xxxxxxxxxx" } : element, ...prev.slice(absoluteIndex + 1)];
         }
         return prev.sort(target === "vehicules" ? (a: any, b: any) => {
           if (a.matricule > b.matricule) return 1;
@@ -99,8 +99,8 @@ export default function EditData({ data, fields, editAction, target, table }: { 
       lub_valeur: externalData.lub
     }, ...prev.slice(index + 1)])
     )
-  }, [currentData[index]?.matricule]);
-  console.log({ fields: getFields(fields) })
+  }, [currentData[index]?.matricule, target, index, currentData, externalData?.lub, externalData?.vehiculeCurburants]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

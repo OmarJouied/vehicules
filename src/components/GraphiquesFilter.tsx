@@ -1,7 +1,7 @@
 import { SearchSelectChoise } from './SearchSelectChoise'
 import { GraphiquesMatriculesChoise } from './GraphiquesMatriculesChoise';
 import GraphiquesDateFilter from './GraphiquesDateFilter';
-import { FormEventHandler, useContext, useEffect, useRef, useState } from 'react';
+import { FormEventHandler, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { contextGraphiques } from './GraphiquesContent';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { PrinterIcon, SearchIcon } from 'lucide-react';
@@ -9,7 +9,7 @@ import { Button } from './ui/button';
 import Printer from './Printer';
 
 const GraphiquesFilter = () => {
-  const { matriculesDepls, currentData } = useContext(contextGraphiques) as any;
+  const { matriculesDepls } = useContext(contextGraphiques) as any;
   const [filtred, setFiltred] = useState({
     month: "",
     year: "",
@@ -19,23 +19,22 @@ const GraphiquesFilter = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [months] = useState(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December",]);
+  const months = useMemo(() => ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December",], []);
 
   useEffect(() => {
-    const year = searchParams.get('year');
-    const month = searchParams.get('month');
+    const year = decodeURIComponent(searchParams.get('year') ?? "");
+    const month = decodeURIComponent(searchParams.get('month') ?? "");
     const matricules = (searchParams.get('matricules') ?? "").split(",").filter(matricule => matricule) as any;
 
     setFiltred({ year: year ?? "", month: month ? months[+month - 1] : "", matricules });
-  }, [searchParams])
+  }, [searchParams, months])
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    console.log(filtred.matricules)
     router.push(
       pathname + '?' + Object.entries(
         {
-          ...(filtred.year ? { year: filtred.year } : {}), ...(filtred.month ? { month: months.findIndex(month => filtred.month === month) + 1 + "" } : {}),
+          ...(filtred.year ? { year: encodeURIComponent(filtred.year) } : {}), ...(filtred.month ? { month: encodeURIComponent(months.findIndex(month => filtred.month === month) + 1 + "") } : {}),
           ...(filtred.matricules.length ? { matricules: filtred.matricules.join(",") } : {})
         }
       ).map(date => `${date[0]}=${decodeURIComponent(date[1])}`).join("&")

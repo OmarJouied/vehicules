@@ -2,6 +2,8 @@ import { DialogContent, DialogFooter, DialogHeader, DialogTitle } from './ui/dia
 import { Button } from './ui/button'
 import { Label } from './ui/label'
 import { Input } from './ui/input'
+import PermissionsForm from './PermissionsForm'
+import { pages } from '@/consts'
 
 const Form = ({ fields, title, inputsSpecial, valueFields, setValueFields, requeredFields, handleDecharge, handleEnregistrer, children }:
   {
@@ -15,7 +17,7 @@ const Form = ({ fields, title, inputsSpecial, valueFields, setValueFields, reque
     <div className="relative flex-1 overflow-auto flex">
       <div className={`grid grid-cols-1 gap-4 p-2 absolute w-full overflow-hidden ${"md:grid-cols-2"}`}>
         {
-          fields.map((field) => (
+          fields.filter(field => title.includes("users") ? !pages.includes(field) : true).map((field) => (
             <Label key={field} className={`flex items-center gap-4 flex-wrap`}>
               <span className={`text-right capitalize ${"min-w-32"}`}>
                 {field}
@@ -36,6 +38,7 @@ const Form = ({ fields, title, inputsSpecial, valueFields, setValueFields, reque
             </Label>
           ))
         }
+        {title.includes("users") && <PermissionsForm values={valueFields} setValues={setValueFields} />}
       </div>
     </div>
     <DialogFooter className='gap-2 !space-x-0 flex-col'>

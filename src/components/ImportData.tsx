@@ -80,7 +80,7 @@ const ImportData = ({ data, columns, target }: { data: any[]; columns: ColumnDef
 
     if (!res.ok) {
       toast({
-        title: "Erreur de donnees.",
+        title: "Erreur des donnees.",
         description: message,
         variant: "destructive"
       })

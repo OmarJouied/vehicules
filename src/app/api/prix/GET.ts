@@ -4,7 +4,8 @@ import { wrapperEndPoints } from "@/utils/backend-functions";
 
 const GET = wrapperEndPoints(async (req: any) => {
   try {
-    const currentPrix = req.nextUrl ? req.nextUrl.searchParams.get("currentPrix") : null;
+    const { searchParams } = new URL(`http://localhost/${req.url}`)
+    const currentPrix = searchParams.get("currentPrix") ?? "";
     let prix = [];
     if (currentPrix) {
       prix = await Prix.aggregate([

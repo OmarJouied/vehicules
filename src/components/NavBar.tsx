@@ -3,49 +3,20 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-
-const links = [
-  {
-    href: '/',
-    label: 'Vehicules',
-  },
-  {
-    href: '/deplacements',
-    label: 'Deplacements',
-  },
-  {
-    href: '/vidange',
-    label: 'vidange',
-  },
-  {
-    href: '/analytics',
-    label: 'analytics',
-  },
-  {
-    href: '/graphiques',
-    label: 'graphiques',
-  },
-  {
-    href: '/depensesSupplementaires',
-    label: 'depensesSupplementaires',
-  },
-  {
-    href: '/change_type_carburant',
-    label: 'change type carburant',
-  },
-  {
-    href: '/prix',
-    label: 'Prix',
-  },
-]
+import UserShortCut from './UserShortCut'
+import { useSession } from 'next-auth/react'
+import { links } from '@/consts'
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname();
-
+  const { data: session } = useSession();
+  console.log({ session })
   useEffect(() => {
     setIsOpen(false);
   }, [pathname])
+
+  if (!session) return null;
 
   return (
     <div>
@@ -56,16 +27,16 @@ const NavBar = () => {
         </svg>
       </button>
       <div className={`flex justify-end z-30 fixed inset-0 transition-transform ease-linear bg-gray-800/25 ${isOpen ? "translate-x-0" : "opacity-0 translate-x-full"}`}>
-        <nav className="flex flex-col w-5/6 max-w-sm py-6 px-6 bg-primary border-r overflow-y-auto">
-          <div className="flex items-center mb-8">
+        <nav className="gap-2.5 flex flex-col w-5/6 max-w-sm py-6 px-6 bg-primary border-r overflow-y-auto">
+          <div className="flex items-center mb-1.5">
             <button className="p-2 rounded-md hover:bg-primary-foreground/10" onClick={() => setIsOpen(false)}>
               <svg className="h-6 w-6 text-white cursor-pointer" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
             </button>
           </div>
-          <div>
-            <ul>
+          <div className='flex flex-col gap-2.5 relative overflow-auto flex-1'>
+            <ul className='absolute flex-1 w-full'>
               {
                 links.map(link => (
                   <li className="mb-1" key={link.label}>
@@ -75,6 +46,7 @@ const NavBar = () => {
               }
             </ul>
           </div>
+          <UserShortCut user={session.user} />
         </nav>
       </div>
     </div>

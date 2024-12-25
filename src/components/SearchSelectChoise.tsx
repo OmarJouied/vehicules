@@ -46,7 +46,6 @@ export function SearchSelectChoise({ name, choises, value, onChange }: { name: s
                   key={choise}
                   value={choise}
                   onSelect={(currentValue) => {
-                    console.log({ choises, currentValue, value })
                     onChange({ target: { value: currentValue === value ? "" : currentValue } })
                     setOpen(false)
                   }}

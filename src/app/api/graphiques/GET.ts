@@ -4,7 +4,7 @@ import { simplifyGraph, wrapperEndPoints } from "@/utils/backend-functions";
 
 const GET = wrapperEndPoints(async (req: Request) => {
   try {
-    const { searchParams } = new URL(req.url)
+    const { searchParams } = new URL(`http://localhost/${req.url}`)
     const year = searchParams.get("year") ?? "";
     const month = searchParams.get("month") ?? "";
     const matricules = searchParams.get("matricules");
