@@ -24,7 +24,7 @@ const createUser = async ({
 
     const isAll = (per: string) => per.includes('Tous') || per.includes('Lire') && per.includes('Ecrire') && per.includes('Modifier') && per.includes('Supprimer');
     const newUser = await User.create({
-      nom, email, password: await bcrypt.hash(password, 10), phone, date: new NormalDate(date as any).parse(), permissions: pages.every(page => permissionsArray.find(p => p[0] === page)) ?
+      nom, email, password: await bcrypt.hash(password, 16), phone, date: new NormalDate(date as any).parse(), permissions: pages.every(page => permissionsArray.find(p => p[0] === page)) ?
         (
           permissionsArray.every(permission => isAll(permission[1])) ? (
             "*"
