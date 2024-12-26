@@ -1,15 +1,16 @@
 import MainContent from "@/containers/MainContent"
-import Rechange from "@/models/Rechange";
 import { Metadata } from "next";
 import Unauthorize from "@/components/Unauthorize";
 import GET from "../api/rechanges/GET";
+import GETVehicules from "../api/vehicules/GET";
+import { NormalDate } from "@/utils/backend-functions";
 
 export const metadata: Metadata = {
   title: 'Rechanges'
 }
 
 const page = async () => {
-  const rechangeColumns: string[] = ["n_bon", "matricule", "distination", "specification", "reference", "qte", "prix_unitere", "date",];
+  const rechangeColumns: string[] = ["n_bon", "matricule", "destination", "specification", "reference", "qte", "prix_unitere", "extern", "date",];
   const res = await GET({ url: '/rechanges', method: 'GET' } as Request);
   const { rechanges, message } = await res.json();
 
@@ -17,11 +18,15 @@ const page = async () => {
     return <Unauthorize message={message} />
   }
 
+  const resVehicules = await GETVehicules({} as Request);
+  const { vehicules } = await resVehicules.json();
+
   return (
     <MainContent
-      data={rechanges}
+      data={rechanges.map((deplacement: any) => ({ ...deplacement, date: new NormalDate(deplacement.date).simplify() }))}
       dataColumns={rechangeColumns}
       title="rechanges"
+      externalData={vehicules.map((vehicule: any) => vehicule.matricule)}
     />
   )
 }

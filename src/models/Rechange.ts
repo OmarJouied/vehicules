@@ -1,22 +1,27 @@
 import mongoose, { InferSchemaType, models, Schema } from "mongoose";
 
 const rechangeSchema = new Schema({
+  matricule: {
+    type: String,
+    required: true,
+  },
+  destination: String,
+  specification: {
+    type: String,
+    required: true,
+  },
+  reference: String,
+  qte: Number,
+  prix_unitere: Number,
   n_bon: {
     type: Number,
     required: true,
-    unique: true,
   },
-  consommateurs: [new Schema({
-    matricule: String,
-    destination: String,
-  })],
-  products: [new Schema({
-    specification: String,
-    reference: String,
-    qte: Number,
-    prix_unitere: Number
-  })],
-  date: Date,
+  extern: Boolean,
+  date: {
+    type: Date,
+    default: Date.now()
+  },
 });
 
 const Rechange = models.Rechange || mongoose.model("Rechange", rechangeSchema);

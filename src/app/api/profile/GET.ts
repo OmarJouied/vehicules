@@ -8,7 +8,7 @@ const GET = wrapperEndPoints(async (req: any) => {
   try {
     const session = await getServerSession(options);
     const user = await User.findById(session?.user.id, { "__v": 0, permissions: 0 });
-    // console.log({ permissions: session?.user.permissions })
+
     return Response.json({ user, nom: session?.user.name }, { status: 200 })
   } catch {
     return Response.json({ error: true, message: "Erreur de chargement des donnees" } as ResponseType, { status: 500 })

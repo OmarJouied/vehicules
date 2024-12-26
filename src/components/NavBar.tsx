@@ -11,7 +11,7 @@ const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname();
   const { data: session } = useSession();
-  console.log({ session })
+
   useEffect(() => {
     setIsOpen(false);
   }, [pathname])

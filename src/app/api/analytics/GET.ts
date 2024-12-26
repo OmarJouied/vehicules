@@ -38,6 +38,29 @@ const GET = wrapperEndPoints(async (req: Request) => {
       },
       {
         $lookup: {
+          from: 'rechanges',
+          localField: 'matricule',
+          foreignField: 'matricule',
+          as: 'vehiculeRechanges',
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: start && end || !start && !end ? [{
+                    $gte: start ? ["$date", start] : [1, 0],
+                  }, {
+                    $lte: end ? ["$date", end] : [0, 1],
+                  }] : [{
+                    $eq: ["$date", start || end]
+                  }]
+                }
+              }
+            }
+          ]
+        },
+      },
+      {
+        $lookup: {
           from: 'depensesupplementaires',
           localField: 'matricule',
           foreignField: 'matricule',
@@ -83,7 +106,7 @@ const GET = wrapperEndPoints(async (req: Request) => {
           ]
         },
       },
-    ]).project({ matricule: 1, marque: 1, typecarburants: 1, vehiculeDeplacements: 1, vehiculeDepenseSupplementaires: 1, _id: 0 });
+    ]).project({ matricule: 1, marque: 1, typecarburants: 1, vehiculeDeplacements: 1, vehiculeDepenseSupplementaires: 1, vehiculeRechanges: 1, _id: 0 });
     const prix = await Prix.find().sort({ date: -1 });
     const taxe = await Taxe.find().sort({ date: -1 });
 

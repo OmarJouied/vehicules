@@ -21,29 +21,6 @@ export const wrapperEndPoints = (endpoint: (req: Request) => Promise<Response>) 
   return endpoint(req);
 }
 
-export const simplifyRechanges = (rechange: RechangeType) => {
-  const rechangeSimplified: any[] = [];
-  rechange.products.forEach(product => {
-    const productBase = {
-      n_bon: rechange.n_bon,
-      date: new NormalDate(rechange.date as any).simplify(),
-      specification: product.specification,
-      reference: product.reference,
-      qte: product.qte,
-      prix_unitere: product.prix_unitere,
-    };
-
-    rechange.consommateurs.forEach(consommateur => rechangeSimplified.push(
-      {
-        ...productBase,
-        matricule: consommateur.matricule,
-        destination: consommateur.destination,
-      }
-    ));
-  });
-  return rechangeSimplified
-}
-
 export const simplifyPermissions = (permissions: any) => {
   return permissions ? (permissions === "*" ? Object.fromEntries(pages.map(page => ([page, 'Tous']))) : Object.fromEntries(Object.entries(permissions).map(permission => [permission[0], permission[1] === "*" ? "Tous" : (permission[1] as string[]).join(', ').replace('GET', 'Lire').replace('POST', 'Ecrire').replace('PATCH', 'Modifier').replace('DELETE', 'Supprimer')]))) : Object.fromEntries(pages.map(page => ([page, ''])))
 }
@@ -54,8 +31,9 @@ export const simplifyAnalytics = ({
   vehiculeDeplacements,
   typecarburants,
   vehiculeDepenseSupplementaires,
+  vehiculeRechanges,
 }:
-  { matricule: string, marque: string, typecarburants: { date: Date; type_carburant: string }[], vehiculeDeplacements: DeplacementType[], vehiculeDepenseSupplementaires: DepenseSupplementaireType[] },
+  { matricule: string, marque: string, typecarburants: { date: Date; type_carburant: string }[], vehiculeDeplacements: DeplacementType[], vehiculeDepenseSupplementaires: DepenseSupplementaireType[], vehiculeRechanges: RechangeType[] },
   prix: PrixType[],
   taxe: TaxeType[]
 ) => {
@@ -84,9 +62,10 @@ export const simplifyAnalytics = ({
 
     curr_val_carburant_ext = 0,
     val_carburant_ext_ttc = 0,
-    val_carburant_ext = 0;
+    val_carburant_ext = 0,
 
-  // (PRIX_VALEUR/(1+(ttc/100))).toFixed(2)
+    val_rechange_ttc = 0,
+    val_rechange = 0;
 
   vehiculeDeplacements.forEach(vehiculeDeplacement => {
     kilometrage += vehiculeDeplacement.kilometrage ?? 0;
@@ -98,7 +77,6 @@ export const simplifyAnalytics = ({
     curr_val_lub = (prix_lub.find(p => p.date <= (vehiculeDeplacement.date ?? 0))?.prix_valeur ?? 0) * ((vehiculeDeplacement.qte_lub ?? 0) + (vehiculeDeplacement.vidange ?? 0));
     val_lub_ttc += curr_val_lub;
     val_lub += curr_val_lub / (1 + (taxe.find(t => t.taxe_name === 'lub' && t.date <= vehiculeDeplacement.date!)?.taxe_valeur ?? 0) / 100);
-    // console.log({ taxe: taxe.find(t => t.taxe_name === 'lub' && t.date <= vehiculeDeplacement.date!)?.taxe_valeur ?? 0 })
     curr_val_carburant = (
       prix_carburant.filter(
         p => typecarburants.find(
@@ -112,6 +90,11 @@ export const simplifyAnalytics = ({
     curr_val_carburant_ext = (vehiculeDeplacement.qte_carburant_ext ?? 0) * (vehiculeDeplacement.prix_carburant_ext ?? 0);
     val_carburant_ext_ttc += curr_val_carburant_ext;
     val_carburant_ext += curr_val_carburant_ext / (1 + (getTaxeCarb(vehiculeDeplacement.date) / 100));
+  })
+
+  vehiculeRechanges.forEach(vehiculeRechange => {
+    val_rechange_ttc += (vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0);
+    val_rechange += (vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0) / (1 + (taxe.find(t => t.taxe_name === 'rechange' && t.date <= vehiculeRechange.date!)?.taxe_valeur ?? 0) / 100);
   })
 
   return Object.fromEntries(Object.entries({
@@ -129,6 +112,8 @@ export const simplifyAnalytics = ({
     qte_carburant_ext: qte_carburant_ext.toFixed(2),
     val_carburant_ext_ttc: val_carburant_ext_ttc.toFixed(2),
     val_carburant_ext: val_carburant_ext.toFixed(2),
+    val_rechange_ttc: val_rechange_ttc.toFixed(2),
+    val_rechange: val_rechange.toFixed(2),
     ...Object.fromEntries([
       ["visite_technique", "0.00"],
       ["carnet_metrologe", "0.00"],
@@ -138,7 +123,7 @@ export const simplifyAnalytics = ({
       ["onssa", "0.00"],
       ...vehiculeDepenseSupplementaires.map(item => [item._id, (item.valeur).toFixed(2)])
     ]),
-    total: (val_lub + val_lub_ttc + val_carburant + val_carburant_ttc + val_carburant_ext + val_carburant_ext_ttc + vehiculeDepenseSupplementaires.map(item => item.valeur).reduce((prev, curr) => prev + curr, 0)).toFixed(2)
+    total: (val_lub + val_lub_ttc + val_carburant + val_carburant_ttc + val_carburant_ext + val_carburant_ext_ttc + val_rechange_ttc + val_rechange + vehiculeDepenseSupplementaires.map(item => item.valeur).reduce((prev, curr) => prev + curr, 0)).toFixed(2)
   }).map(item => [item[0], item[1] ?? 0]))
 }
 

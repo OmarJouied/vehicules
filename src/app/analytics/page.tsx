@@ -29,6 +29,8 @@ export default async function Home({ searchParams: { du, au } }: { searchParams:
     "qte_carburant_ext",
     "val_carburant_ext_ttc",
     "val_carburant_ext",
+    "val_rechange_ttc",
+    "val_rechange",
     "con%",
     "visite_technique",
     "carnet_metrologe",

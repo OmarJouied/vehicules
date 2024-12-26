@@ -439,32 +439,38 @@ export class SpecificActions {
     this.rechanges = {
       defaultData: {
         matricule: "",
-        date: '//'
+        date: '//',
+        n_bon: "",
+        destination: "",
+        specification: "",
+        reference: "",
+        qte: 0,
+        prix_unitere: 0,
+        extern: "no"
       },
-      requiredField: ["matricule"],
-      inputsSpecial(data: { matricule: string; type_carburant: string; date: string; est_carburant?: boolean }, setData: any, choises: any) {
+      requiredField: ["matricule", "n_bon", "specification", "qte", "prix_unitere", "destination",],
+      inputsSpecial(data: RechangeType, setData: any, choises: any) {
         return {
-          // date: InputOTPDate({
-          //   date: data.date ? data.date + "" : "",
-          //   setDate: (value: any) => setData((prev: any) => ({ ...prev, date: value }))
-          // }),
-          // matricule: SearchSelectChoise({
-          //   name: "matricule",
-          //   choises: (choises.matricules ?? []),
-          //   value: data.matricule as string,
-          //   onChange: ({ target: { value } }) => setData((prev: any) => ({ ...prev, matricule: value })),
-          // }),
-          // type_carburant: SearchSelectChoise({
-          //   name: "type_carburant",
-          //   choises: (choises.type_carburants ?? []),
-          //   value: data.type_carburant as string,
-          //   onChange: ({ target: { value } }) => setData((prev: any) => ({ ...prev, type_carburant: value })),
-          // }),
+          date: InputOTPDate({
+            date: data.date ? data.date + "" : "",
+            setDate: (value: any) => setData((prev: any) => ({ ...prev, date: value }))
+          }),
+          matricule: SearchSelectChoise({
+            name: "matricule",
+            choises: (choises ?? []),
+            value: data.matricule as string,
+            onChange: ({ target: { value } }) => setData((prev: any) => ({ ...prev, matricule: value })),
+          }),
+          extern: CheckboxPrix({ id: "extern", isChecked: (data.extern as any) === "oui", onCheckedChange: () => setData((prev: any) => ({ ...prev, extern: (data.extern as any) === "oui" ? "no" : "oui" })) })
         }
       },
       validate(data: RechangeType) {
-        if (!data.n_bon) return "Merci de remplir le champ matricule.";
-        if (!data.consommateurs.length) return "Merci de remplir le champ destination.";
+        if (!data.n_bon) return "Merci de remplir le champ n_bon.";
+        if (!data.matricule) return "Merci de remplir le champ matricule.";
+        if (!data.destination) return "Merci de remplir le champ destination.";
+        if (!data.specification) return "Merci de remplir le champ specification.";
+        if (!data.qte) return "Merci de remplir le champ qte.";
+        if (!data.prix_unitere) return "Merci de remplir le champ prix_unitere.";
         if (data.date && !`${data.date}`.match(/^\d{2}\/\d{2}\/\d{4}$/)) return "Entrez une valide valeur pour date.";
       },
       getFields(fields: string[]) {

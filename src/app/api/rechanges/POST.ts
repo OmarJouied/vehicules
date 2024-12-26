@@ -15,14 +15,11 @@ const POST = wrapperEndPoints(async (req: Request) => {
 })
 
 const createRechange = async ({
-  consommateurs, products, date, n_bon,
+  n_bon, matricule, destination, specification, reference, qte, prix_unitere, date, extern,
 }: RechangeType) => {
-  const rechange = await Rechange.findOne({ n_bon });
-  if (rechange) throw new Error(`Cet article existe deja, n_bon: ${n_bon}`);
-
   try {
     const newRechange = await Rechange.create({
-      consommateurs, products, date: new NormalDate(date as any).parse(), n_bon,
+      n_bon, matricule, destination, specification, reference, qte, prix_unitere, date: new NormalDate(date as any).parse(), extern: (extern as any) === "oui" ? true : undefined,
     });
     return { n_bon, _id: newRechange._id }
   } catch {

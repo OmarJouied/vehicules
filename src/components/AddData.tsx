@@ -23,8 +23,7 @@ const AddData = ({ title, fields }: { title: string; fields: string[] }) => {
 
   const save = async () => {
     const description = validation(data);
-    // console.log({ data: simplify(data) });
-    // return;
+
     if (description) {
       return toast({
         title: "Erreur des donnees.",

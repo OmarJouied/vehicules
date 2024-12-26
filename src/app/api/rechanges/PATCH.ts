@@ -14,15 +14,15 @@ const PATCH = wrapperEndPoints(async (req: Request) => {
 })
 
 const updateVehicule = async ({
-  consommateurs, products, date, n_bon, _id
+  matricule, specification, destination, prix_unitere, qte, reference, date, n_bon, extern, _id
 }: RechangeType) => {
   const rechange = await Rechange.findById(_id);
   if (!rechange) throw new Error("Ce document n'existe pas, n_bon: " + n_bon);
 
   Object.entries({
-    consommateurs, products, date, n_bon,
+    matricule, specification, destination, prix_unitere, qte, reference, date: new NormalDate(date as any).parse(), n_bon, extern,
   }).forEach(item => {
-    rechange[item[0]] = item[0] === "date" ? new NormalDate(item[1] as any).parse() : item[1];
+    rechange[item[0]] = item[0] === "extern" ? (item[1] === "oui" ? true : undefined) : item[1];
   });
 
   try {
