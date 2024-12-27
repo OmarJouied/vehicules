@@ -40,7 +40,7 @@ export function LoginForm() {
         title: "Login avec succes",
         className: 'bg-success'
       })
-      router.push(location.search.split('=').slice(1).join("=") || '/')
+      router.push(encodeURIComponent(location.search.split('=').slice(1).join("=") || '/'))
     } catch (error: any) {
       toast({
         title: "Erreur des donnees.",
