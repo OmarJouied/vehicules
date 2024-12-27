@@ -20,6 +20,7 @@ export function LoginForm() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
 
   const handleLogin: FormEventHandler<HTMLFormElement> = async (e) => {
@@ -40,7 +41,7 @@ export function LoginForm() {
         title: "Login avec succes",
         className: 'bg-success'
       })
-      router.push(decodeURIComponent(location.search.split('=').slice(1).join("=") || '/'))
+      router.push(decodeURIComponent(searchParams.get("next") || '/'))
     } catch (error: any) {
       toast({
         title: "Erreur des donnees.",
