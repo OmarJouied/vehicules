@@ -41,7 +41,9 @@ export function LoginForm() {
         title: "Login avec succes",
         className: 'bg-success'
       })
-      router.push(decodeURIComponent(searchParams.get("next") || '/'))
+
+      router.refresh();
+      router.push(decodeURIComponent(searchParams.get("next") || '/'));
     } catch (error: any) {
       toast({
         title: "Erreur des donnees.",
