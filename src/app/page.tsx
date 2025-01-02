@@ -11,11 +11,11 @@ export default async function Home() {
       <div className="pt-6 text-center lg:text-left">
         <h1 className="text-6xl capitalize leading-[1.2]">Bienvenue sur l’application Véhicules</h1>
         <p className="mt-4 text-lg text-gray-700">
-          Cette application est un exemple d&#39;application Next.js avec TypeScript, Tailwind CSS, et MongoDB.
+          gestion globale de votre parc automobile
         </p>
       </div>
       <div className="flex justify-center">
-        <Image src="/logo.png" alt="Application Logo" width={500} height={500} />
+        <Image src="/leading-img.png" alt="Application Logo" width={500} height={500} />
       </div>
     </main>
   )
