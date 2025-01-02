@@ -16,7 +16,7 @@ const NavBar = () => {
     setIsOpen(false);
   }, [pathname])
 
-  if (!pages.length) return null;
+  if (!user) return null;
 
   return (
     <div>
