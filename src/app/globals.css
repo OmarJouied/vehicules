@@ -86,3 +86,23 @@
 .container {
   @apply mx-auto px-3 sm:px-6 md:px-12 lg:px-24 py-4;
 }
+
+/* width */
+::-webkit-scrollbar {
+    @apply w-2 h-2;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    @apply bg-gray-200;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/80;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground;
+}

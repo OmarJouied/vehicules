@@ -1,6 +1,6 @@
 "use client"
 
-import { LegacyRef, useCallback, useContext, useEffect, useRef, useState } from "react"
+import { LegacyRef, MouseEventHandler, useCallback, useContext, useEffect, useRef, useState } from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,12 +13,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowDown, ArrowUp, ChevronDown, PrinterIcon, SearchIcon } from "lucide-react"
+import { ChevronDown, PrinterIcon, SearchIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -41,6 +40,9 @@ import ImportExcel from "./ImportExcel"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { context } from "@/containers/MainContent"
 import { useSearchParams } from "next/navigation"
+import ColumnVisible from "./ColumnVisible"
+import { useToast } from "@/hooks/use-toast"
+import ReadMore from "./ReadMore"
 
 function useSkipper() {
   const shouldSkipRef = useRef(true)
@@ -69,7 +71,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
   const [rowSelection, setRowSelection] = useState({})
   const tableRef = useRef<HTMLTableElement>();
   const [selected, setSelected] = useState<"Page" | "Tous" | "Choisi">("Page");
-  const [pageIndex, setPageIndex] = useState<number>(0);
+  const [pageIndex, setPageIndex] = useState(0);
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper()
 
   const table = useReactTable({
@@ -92,7 +94,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
     },
     initialState: {
       pagination: {
-        pageSize: 5,
+        pageSize: 10,
         pageIndex
       }
     },
@@ -158,10 +160,12 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
         "val_lub_ttc",
         "vignte",
         "visite_technique",
+        "val_rechange_ttc",
+        "val_rechange",
       ]);
       (table.options.meta as any)?.updateData(calculate);
     }
-  }, [table.getAllColumns().filter(col => col.getIsVisible()).length, table, title])
+  }, [table.getAllColumns().filter(col => col.getIsVisible()).length])
 
   return (
     <div className="w-full">
@@ -258,33 +262,10 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="hover:bg-primary/80">
-                Colonnes <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="max-h-96 overflow-auto" align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ColumnVisible table={table} />
         </div>
       </div>
-      <div className="rounded-md border border-primary">
+      <div className="rounded-md border border-primary overflow-hidden">
         <Table ref={tableRef as unknown as LegacyRef<HTMLTableElement>}>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -292,13 +273,13 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    {...(header.column.getCanSort() ? { className: "p-2 pt-0" } : { className: "!pr-2" })}
+                    {...(header.column.getCanSort() ? { className: "p-2 pt-0 hover:bg-muted" } : { className: "!pr-2" })}
                   >
                     {header.column.getCanSort() ? <>
                       <div
                         onClick={header.column.getToggleSortingHandler()}
                         className={header.column.getCanSort()
-                          ? 'cursor-pointer select-none px-2 py-2 text-center hover:bg-muted'
+                          ? 'cursor-pointer select-none px-2 py-2 text-center'
                           : ''}
                         title={
                           header.column.getCanSort()
@@ -316,6 +297,10 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                             header.column.columnDef.header,
                             header.getContext()
                           )}
+                        {{
+                          asc: ' 🔼',
+                          desc: ' 🔽',
+                        }[header.column.getIsSorted() as string] ?? null}
                       </div>
                       <div className="relative flex items-center rounded-md bg-background">
                         <Input
@@ -417,6 +402,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
           >
             Next
           </Button>
+          <ReadMore tableUpdate={table.options.meta} hasNext={table.getCanNextPage()} title={title} setCurrentData={setCurrentData} />
         </div>
       </div>
     </div>

@@ -4,4 +4,4 @@ export const pages = [
   "depensesSupplementaires", "change_type_carburant", "prix", "taxe",
 ]
 
-export const links = pages.map(page => ({ label: page, href: page === "vehicules" ? '/' : '/' + page }))
+export const links = pages.map(page => ({ label: page, href: '/' + page }))

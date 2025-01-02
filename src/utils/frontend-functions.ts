@@ -33,7 +33,7 @@ export const jsonToPdf = (title: string, body: string[][], head: string[][], dat
 
   const img = new Image;
   img.onload = function () {
-    doc.addImage(this as any, 'JPEG', 10, 10, 15, 12);
+    doc.addImage(this as any, 'JPEG', 3.32, 2, 15, 12);
     doc.setFontSize(12);
     doc.setFillColor(120, 120, 120);
     doc.text(title, doc.internal.pageSize.getWidth() / 2, 10, {
@@ -50,7 +50,7 @@ export const jsonToPdf = (title: string, body: string[][], head: string[][], dat
       head,
       body,
       margin: {
-        left: 4, right: 4
+        left: 4, right: 4, top: 15
       },
       styles: {
         fontSize: 4.5,
@@ -75,11 +75,11 @@ export const jsonToPdf = (title: string, body: string[][], head: string[][], dat
     })
 
     doc.autoPrint();
-    doc.output("dataurlnewwindow");
+    doc.output("dataurlnewwindow", { filename: `${title}.pdf` });
   };
 
   img.crossOrigin = "";
-  img.src = "/banana.jpeg";
+  img.src = "/logo.png";
 }
 
 export const toXlsx = (title: string, data: any[]) => {
@@ -184,9 +184,9 @@ export class SpecificActions {
     };
     this.vehicules = {
       defaultData: {
-        matricule: "", affectation: "", assurance: 0, carnet_metrologe: 0, dateachat: "",
-        datemc: "", genre: "", marque: "", numchassis: "", observation: "", poids: 0, prix_aquisiti: 0,
-        taxe_tenage: 0, type: "", type_carburant: "", vignte: 0, visite_technique: 0, onssa: 0
+        matricule: "", affectation: "", assurance: "", carnet_metrologe: "", dateachat: "",
+        datemc: "", genre: "", marque: "", numchassis: "", observation: "", poids: "", prix_aquisiti: "",
+        taxe_tenage: "", type: "", type_carburant: "", vignte: "", visite_technique: "", onssa: ""
       },
       requiredField: ["matricule"],
       inputsSpecial(data: any, setData: any, choises?: string[], editing?: boolean) {
@@ -223,22 +223,24 @@ export class SpecificActions {
     this.deplacements = {
       defaultData: {
         matricule: "", destination: "", conductor: "", date: "",
-        qte_lub: 0, vidange: 0, qte_carburant: 0, kilometrage: 0,
-        carburant_valeur: 0, lub_valeur: 0, filter_changer: undefined
+        qte_lub: "", vidange: "", qte_carburant: "", qte_carburant_ext: "",
+        prix_carburant_ext: "", kilometrage_sorte: "", kilometrage_entre: "",
+        kilometrage: "", carburant_valeur: "", lub_valeur: "",
+        filter_changer: undefined
       },
       requiredField: ["matricule", "carburant_valeur", "lub_valeur",],
       inputsSpecial(data: DeplacementType & { carburant_valeur: string, lub_valeur: string, kilometrage_entre: string, kilometrage_sorte: string }, setData: any, choises?: any, editing?: boolean) {
         return {
           kilometrage_entre: InputDate({
             id: "lub_valeur",
-            onChange: ({ target: { value } }) => setData((prev: any) => ({ ...prev, kilometrage_entre: value, kilometrage: +((value + "").match(/^-?\d+$/) ? value : 0) - +(prev.kilometrage_sorte ?? 0) })),
+            onChange: ({ target: { value } }) => setData((prev: any) => ({ ...prev, kilometrage_entre: value, kilometrage: (+value || 0) - (+prev.kilometrage_sorte || 0) })),
             placeholder: "",
             value: data.kilometrage_entre,
             errorCondition: false
           }),
           kilometrage_sorte: InputDate({
             id: "lub_valeur",
-            onChange: ({ target: { value } }) => setData((prev: any) => ({ ...prev, kilometrage_sorte: value, kilometrage: +(prev.kilometrage_entre ?? 0) - +((value + "").match(/^-?\d+$/) ? value : 0) })),
+            onChange: ({ target: { value } }) => setData((prev: any) => ({ ...prev, kilometrage_sorte: value, kilometrage: (+prev.kilometrage_entre || 0) - (+value || 0) })),
             placeholder: "",
             value: data.kilometrage_sorte,
             errorCondition: false
@@ -296,13 +298,20 @@ export class SpecificActions {
     this.prix = {
       defaultData: {
         prix_name: "",
-        prix_valeur: 0,
+        prix_valeur: "",
         est_carburant: undefined,
         date: '//'
       },
       requiredField: ["prix_name", "prix_valeur"],
-      inputsSpecial(data: { date: string; est_carburant?: boolean }, setData: any) {
+      inputsSpecial(data: PrixType, setData: any) {
         return {
+          prix_name: InputDate({
+            id: "prix_name",
+            onChange: ({ target: { value } }) => setData((prev: any) => ({ ...prev, prix_name: value.toLowerCase() })),
+            placeholder: "",
+            value: data.prix_name,
+            errorCondition: false
+          }),
           date: InputOTPDate({
             date: data.date ? data.date + "" : "",
             setDate: (value: any) => setData((prev: any) => ({ ...prev, date: value }))
@@ -312,7 +321,7 @@ export class SpecificActions {
       },
       validate(data: PrixType) {
         if (!data.prix_name) return "Merci de remplir le champ prix_name.";
-        if (!data.prix_valeur || data.prix_valeur < 0) return "Entrez une valeur positive pour prix_valeur.";
+        if (!data.prix_valeur || (+data.prix_valeur || 0) < 0) return "Entrez une valeur positive pour prix_valeur.";
         if (data.date && !`${data.date}`.match(/^\d{2}\/\d{2}\/\d{4}$/)) return "Entrez une valide valeur pour date.";
       },
       getFields(fields: string[]) {
@@ -322,7 +331,7 @@ export class SpecificActions {
     this.taxe = {
       defaultData: {
         taxe_name: "",
-        taxe_valeur: 10,
+        taxe_valeur: "",
         date: '//'
       },
       requiredField: ["taxe_name", "taxe_valeur"],
@@ -342,7 +351,7 @@ export class SpecificActions {
       },
       validate(data: TaxeType) {
         if (!data.taxe_name) return "Merci de remplir le champ taxe_name.";
-        if (!data.taxe_valeur || data.taxe_valeur < 0) return "Entrez une valeur positive pour taxe_valeur.";
+        if (!data.taxe_valeur || (+data.taxe_valeur || 0) < 0) return "Entrez une valeur positive pour taxe_valeur.";
         if (data.date && !`${data.date}`.match(/^\d{2}\/\d{2}\/\d{4}$/)) return "Entrez une valide valeur pour date.";
       },
       getFields(fields: string[]) {
@@ -350,8 +359,7 @@ export class SpecificActions {
       }
     };
     this.analytics = {
-      defaultData: {
-      },
+      defaultData: {},
       requiredField: [],
       inputsSpecial() {
         return {}
@@ -366,7 +374,7 @@ export class SpecificActions {
       defaultData: {
         matricule: "",
         type_depense: "",
-        valeur: 0,
+        valeur: "",
         date: '//',
       },
       requiredField: ["matricule", "type_depense", "valeur", "date",],
@@ -393,7 +401,7 @@ export class SpecificActions {
       validate(data: DepenseSupplementaireType) {
         if (!data.matricule) return "Merci de remplir le champ matricule.";
         if (!data.type_depense) return "Merci de remplir le champ type_depense.";
-        if (!data.valeur || data.valeur < 0) return "Entrez une valeur positive pour valeur.";
+        if (!data.valeur || (+data.valeur || 0) < 0) return "Entrez une valeur positive pour valeur.";
         if (!`${data.date}`.match(/^\d{2}\/\d{2}\/\d{4}$/)) return "Entrez une valide valeur pour date.";
       },
       getFields(fields: string[]) {
@@ -444,8 +452,8 @@ export class SpecificActions {
         destination: "",
         specification: "",
         reference: "",
-        qte: 0,
-        prix_unitere: 0,
+        qte: "",
+        prix_unitere: "",
         extern: "no"
       },
       requiredField: ["matricule", "n_bon", "specification", "qte", "prix_unitere", "destination",],

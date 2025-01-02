@@ -1,12 +1,16 @@
 import VehiculeTypeCarburant from "@/models/VehiculeTypeCarburant"
 import ResponseType from "@/types/ResponseType";
 import { wrapperEndPoints } from "@/utils/backend-functions";
+import { pageRowsLength } from "..";
 
-const GET = wrapperEndPoints(async () => {
+const GET = wrapperEndPoints(async (req: Request) => {
   try {
-    const vehiculeTypeCarburant = await VehiculeTypeCarburant.find({}, { "__v": 0 }).sort({ date: -1 })
+    const { searchParams } = new URL(req.url, `http://localhost:3000`);
+    const more = searchParams.get('more');
 
-    return Response.json({ vehiculeTypeCarburant }, { status: 200 })
+    const data = await VehiculeTypeCarburant.find({}, { "__v": 0 }).skip(pageRowsLength * Number(more)).limit(pageRowsLength).sort({ date: -1 })
+
+    return Response.json({ data }, { status: 200 })
   } catch {
     return Response.json({ error: true, message: "Erreur de chargement des donnees" } as ResponseType, { status: 500 })
   }

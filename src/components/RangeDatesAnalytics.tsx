@@ -1,17 +1,15 @@
 "use client"
 
-import { FormEventHandler, useCallback, useEffect, useState } from 'react'
-import { Input } from './ui/input'
+import { FormEventHandler, useEffect, useState } from 'react'
 import { Label } from './ui/label'
 import { Button } from './ui/button'
-import Image from 'next/image'
 import InputOTPDate from './InputOTPDate'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { SearchIcon } from 'lucide-react'
 
 const RangeDatesAnalytics = () => {
   const [rangeDates, setRangeDates] = useState({
-    du: '',
+    du: '01/01/' + (new Date().getFullYear() + 1),
     au: ''
   })
   const router = useRouter();
@@ -24,14 +22,14 @@ const RangeDatesAnalytics = () => {
   }
 
   useEffect(() => {
-    const du = decodeURIComponent(searchParams.get('du') ?? "");
+    const du = decodeURIComponent(searchParams.get('du') ?? "01/01/" + (new Date().getFullYear() + 1));
     const au = decodeURIComponent(searchParams.get('au') ?? "");
 
     setRangeDates({ du, au });
   }, [searchParams])
 
   return (
-    <form className='flex gap-4 items-center' onSubmit={handleSubmit}>
+    <form className='flex gap-4 justify-end items-center flex-wrap' onSubmit={handleSubmit}>
       <Label className={`flex items-center gap-4 flex-wrap w-48`}>
         <span className={`text-right capitalize`}>
           du

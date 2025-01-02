@@ -15,7 +15,7 @@ export default async function Home() {
     "filter_changer",
   ];
   const res = await GET({ url: "/vidange", method: 'GET' } as Request);
-  const { vidangeState, message } = await res.json();
+  const { data: vidangeState, message } = await res.json();
 
   if (message) {
     return <Unauthorize message={message} />

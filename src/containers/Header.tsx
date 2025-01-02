@@ -1,4 +1,5 @@
 import NavBar from '@/components/NavBar'
+import Image from 'next/image'
 import Link from 'next/link'
 
 const Header = async () => {
@@ -6,7 +7,7 @@ const Header = async () => {
     <header>
       <div className="container flex justify-between items-center gap-2.5">
         <Link href={'/'}>
-          <h1>Vehicules</h1>
+          <Image src="/logo.png" alt="logo" width={100} height={100} />
         </Link>
         <NavBar />
       </div>

@@ -13,13 +13,13 @@ export const metadata: Metadata = {
 const page = async () => {
   const taxeColumns: string[] = Object.keys(Taxe.schema.paths).filter(path => !path.startsWith("_"));
   const res = await GET({ url: '/taxe', method: 'GET' } as Request);
-  const { taxe, message } = await res.json();
+  const { data: taxe, message } = await res.json();
 
   if (message) {
     return <Unauthorize message={message} />
   }
   const resPrix = await GETPrix({ url: '/prix?currentPrix=1', method: 'GET' } as Request);
-  const { prix } = await resPrix.json();
+  const { data: prix } = await resPrix.json();
 
   return (
     <MainContent

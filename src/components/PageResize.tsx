@@ -17,15 +17,11 @@ const PageResize = ({ table, size, setSize }: { table: Table<VehiculeType>; size
     }
   }
 
-  // useEffect(() => {
-  //   setSize(table.getPaginationRowModel().rows.length);
-  // }, [pageSize])
-
   return (
     <Input
       value={size}
       onChange={handlePageResize}
-      className="max-w-16 text-center h-full"
+      className="max-w-16 text-center h-full p-2"
       onKeyDown={handlePageResizeCommit}
     />
   )

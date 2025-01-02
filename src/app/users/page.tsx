@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 const page = async () => {
   const userColumns: string[] = [...Object.keys(User.schema.paths).filter(path => !path.startsWith("_") && !path.startsWith("permissions")), ...pages];
   const res = await GET({ url: '/users', method: 'GET' } as Request);
-  const { users, message } = await res.json() as { users: UserType[] } & ResponseType;
+  const { data: users, message } = await res.json() as { data: UserType[] } & ResponseType;
 
   if (message) {
     return <Unauthorize message={message} />

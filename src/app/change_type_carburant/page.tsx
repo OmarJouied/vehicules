@@ -14,17 +14,17 @@ export const metadata: Metadata = {
 const page = async () => {
   const vehiculeTypeCarburantColumns: string[] = Object.keys(VehiculeTypeCarburant.schema.paths).filter(path => !path.startsWith("_"));;
   const res = await GET({ url: '/vehiculeTypeCarburant', method: 'GET' } as Request);
-  const { vehiculeTypeCarburant, message } = await res.json();
+  const { data: vehiculeTypeCarburant, message } = await res.json();
 
   if (message) {
     return <Unauthorize message={message} />
   }
 
   const resMatricules = await GETVehicules({} as Request);
-  const { vehicules } = await resMatricules.json();
+  const { data: vehicules } = await resMatricules.json();
 
   const resPrix = await GETPrix({} as Request);
-  const { prix } = await resPrix.json();
+  const { data: prix } = await resPrix.json();
 
   return (
     <MainContent

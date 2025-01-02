@@ -3,16 +3,20 @@ import Taxe from "@/models/Taxe";
 import Vehicule from "@/models/Vehicule";
 import ResponseType from "@/types/ResponseType";
 import { NormalDate, simplifyAnalytics, wrapperEndPoints } from "@/utils/backend-functions";
+import { pageRowsLength } from "..";
 
 const GET = wrapperEndPoints(async (req: Request) => {
   try {
     const { searchParams } = new URL(`http://localhost/${req.url}`)
-    const du = new NormalDate(searchParams.get("du") ?? "").parse() ?? "";
+    const du = new NormalDate(searchParams.get("du") ?? "01/01/" + (new Date().getFullYear() + 1)).parse() ?? "";
     const au = new NormalDate(searchParams.get("au") ?? "").parse() ?? "";
+    const more = searchParams.get('more');
     let start = du > au ? au : du;
     let end = du < au ? au : du;
 
     const analytics = await Vehicule.aggregate([
+      { $skip: pageRowsLength * Number(more) },
+      { $limit: pageRowsLength },
       {
         $lookup: {
           from: 'deplacements',
@@ -111,7 +115,7 @@ const GET = wrapperEndPoints(async (req: Request) => {
     const taxe = await Taxe.find().sort({ date: -1 });
 
     return Response.json({
-      analytics: analytics
+      data: analytics
         // .filter(row => row.matricule === '001246-44')
         .map(row => simplifyAnalytics(
           row,

@@ -1,14 +1,17 @@
 import Prix from "@/models/Prix"
 import ResponseType from "@/types/ResponseType";
 import { wrapperEndPoints } from "@/utils/backend-functions";
+import { pageRowsLength } from "..";
 
 const GET = wrapperEndPoints(async (req: any) => {
   try {
     const { searchParams } = new URL(`http://localhost/${req.url}`)
     const currentPrix = searchParams.get("currentPrix") ?? "";
-    let prix = [];
+    const more = searchParams.get("more") ?? 0;
+
+    let data = [];
     if (currentPrix) {
-      prix = await Prix.aggregate([
+      data = await Prix.aggregate([
         {
           $group: {
             _id: "$prix_name",
@@ -24,10 +27,13 @@ const GET = wrapperEndPoints(async (req: any) => {
         }
       ])
     } else {
-      prix = await Prix.find({}, { "__v": 0 }).sort({ date: -1 })
+      data = await Prix.find({}, { "__v": 0 })
+        .skip(pageRowsLength * Number(more))
+        .limit(pageRowsLength)
+        .sort({ date: -1 })
     }
 
-    return Response.json({ prix }, { status: 200 })
+    return Response.json({ data }, { status: 200 })
   } catch {
     return Response.json({ error: true, message: "Erreur de chargement des donnees" } as ResponseType, { status: 500 })
   }

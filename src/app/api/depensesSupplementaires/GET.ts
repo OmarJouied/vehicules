@@ -1,12 +1,19 @@
 import DepenseSupplementaire from "@/models/DepenseSupplementaire";
 import ResponseType from "@/types/ResponseType";
 import { wrapperEndPoints } from "@/utils/backend-functions";
+import { pageRowsLength } from "..";
 
 const GET = wrapperEndPoints(async (req: Request) => {
   try {
-    const depensesSupplementaires = await DepenseSupplementaire.find({}, { "__v": 0 }).sort({ "matricule": 1 });
+    const { searchParams } = new URL(req.url, `http://localhost:3000`);
+    const more = searchParams.get('more');
 
-    return Response.json({ depensesSupplementaires }, { status: 200 });
+    const data = await DepenseSupplementaire.find({}, { "__v": 0 })
+      .skip(pageRowsLength * Number(more))
+      .limit(pageRowsLength)
+      .sort({ "matricule": 1 });
+
+    return Response.json({ data }, { status: 200 });
   } catch {
     return Response.json({ error: true, message: "Erreur de chargement des donnees" } as ResponseType, { status: 500 });
   }

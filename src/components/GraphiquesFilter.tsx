@@ -44,7 +44,7 @@ const GraphiquesFilter = () => {
   return (
     <footer className='mt-4 w-full flex justify-between print:justify-center gap-4 items-center flex-wrap'>
       <Printer />
-      <form className='flex gap-4 items-center' onSubmit={handleSubmit}>
+      <form className='flex gap-4 items-center flex-wrap' onSubmit={handleSubmit}>
         <div className="max-w-sm">
           <GraphiquesMatriculesChoise values={filtred.matricules} choises={matriculesDepls.map((item: { _id: any; }) => item._id)} onChange={setFiltred} />
         </div>

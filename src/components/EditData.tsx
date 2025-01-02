@@ -99,7 +99,7 @@ export default function EditData({ data, fields, editAction, target, table }: { 
       lub_valeur: externalData.lub
     }, ...prev.slice(index + 1)])
     )
-  }, [currentData[index]?.matricule, target, index, currentData, externalData?.lub, externalData?.vehiculeCurburants]);
+  }, [currentData[index]?.matricule]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

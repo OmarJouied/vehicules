@@ -65,7 +65,7 @@ const AddData = ({ title, fields }: { title: string; fields: string[] }) => {
       ...prev, carburant_valeur: externalData.vehiculeCurburants.find((v: any) => v.matricule === data.matricule)?.carburantValeur,
       lub_valeur: externalData.lub
     })))
-  }, [data.matricule, externalData?.lub, externalData?.vehiculeCurburants, title]);
+  }, [data.matricule]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

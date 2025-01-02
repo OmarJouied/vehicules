@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 const page = async () => {
   const prixColumns: string[] = ["prix_name", "prix_valeur", "date",];
   const res = await GET({ url: '/prix', method: 'GET' } as Request);
-  const { prix, message } = await res.json();
+  const { data: prix, message } = await res.json();
 
   if (message) {
     return <Unauthorize message={message} />

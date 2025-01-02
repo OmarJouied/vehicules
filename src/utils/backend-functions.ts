@@ -16,9 +16,20 @@ export const wrapperEndPoints = (endpoint: (req: Request) => Promise<Response>) 
   const method = req.method;
   const { permissions } = session?.user ?? { permissions: null };
 
-  if (actionPath && method && permissions !== "*" && permissions[actionPath] !== "*" && !permissions[actionPath]?.includes(method)) return Response.json({ error: true, message: "Unauthorize" } as ResponseType, { status: 401 })
+  if (actionPath === 'admin' && method === 'POST') return endpoint(req);
+
+  if (actionPath && method && permissions !== "*" && permissions?.[actionPath] !== "*" && !permissions?.[actionPath]?.includes(method)) return Response.json({ error: true, message: "Unauthorize" } as ResponseType, { status: 401 });
 
   return endpoint(req);
+}
+
+export const simplifyVehicules = (vehicules: any) => {
+  return vehicules.map((vehicule: any) => ({
+    ...vehicule,
+    type_carburant: ((vehicule as any).type_carburant?.[0] as any)?.type_carburant,
+    depensesupplementaires: undefined,
+    ...Object.fromEntries((vehicule as any).depensesupplementaires.map((item: { _id: any; valeur: any; }) => [item._id, item.valeur]))
+  }))
 }
 
 export const simplifyPermissions = (permissions: any) => {
@@ -153,12 +164,17 @@ export const simplifyGraph = (deplacementsGraph: {
   lub: number,
   carburant: number,
   carb_ext: number
+}[], rechangesGraph: {
+  _id: {
+    date: number
+  },
+  rechange: number
 }[], { month, year }: { month: string; year: string }, years: string[]) => {
   const dates = Object.fromEntries(deplacementsGraph.map(deplacementGraph => ([deplacementGraph._id.date, { ...deplacementGraph, _id: deplacementGraph._id.date }])));
 
   return Array.from(!month && !year ? years : {
     length: month ? new Date(+year || new Date().getFullYear(), +month, 0).getDate() : 12
-  }, (v, k) => !month && !year ? v : k + 1).map((num) => ({ ...{ _id: num, kilometrage: 0, lub: 0, carburant: 0, carb_ext: 0 }, ...dates[num] }))
+  }, (v, k) => !month && !year ? v : k + 1).map((num) => ({ ...{ _id: num, kilometrage: 0, lub: 0, carburant: 0, carb_ext: 0 }, ...dates[num], rechange: rechangesGraph.find(rechangeGraph => rechangeGraph._id.date === num)?.rechange ?? 0 }));
 }
 
 export class NormalDate {

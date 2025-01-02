@@ -4,19 +4,19 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import UserShortCut from './UserShortCut'
-import { useSession } from 'next-auth/react'
 import { links } from '@/consts'
+import { usePermissions } from '@/hooks/use-permissions'
 
 const NavBar = () => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { pages, user } = usePermissions();
 
   useEffect(() => {
     setIsOpen(false);
   }, [pathname])
 
-  if (!session) return null;
+  if (!pages.length) return null;
 
   return (
     <div>
@@ -26,7 +26,7 @@ const NavBar = () => {
           <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"></path>
         </svg>
       </button>
-      <div className={`flex justify-end z-30 fixed inset-0 transition-transform ease-linear bg-gray-800/25 ${isOpen ? "translate-x-0" : "opacity-0 translate-x-full"}`}>
+      <div className={`flex justify-end z-30 fixed inset-0 transition-transform ease-linear duration-75 bg-gray-800/25 ${isOpen ? "translate-x-0" : "opacity-0 translate-x-full"}`}>
         <nav className="gap-2.5 flex flex-col w-5/6 max-w-sm py-6 px-6 bg-primary border-r overflow-y-auto">
           <div className="flex items-center mb-1.5">
             <button className="p-2 rounded-md hover:bg-primary-foreground/10" onClick={() => setIsOpen(false)}>
@@ -38,7 +38,7 @@ const NavBar = () => {
           <div className='flex flex-col gap-2.5 relative overflow-auto flex-1'>
             <ul className='absolute flex-1 w-full'>
               {
-                links.map(link => (
+                links.map(link => (pages === "*" || pages.includes(link.label)) && (
                   <li className="mb-1" key={link.label}>
                     <Link className={`capitalize block p-4 text-sm font-semibold text-white hover:bg-primary-foreground/10 rounded ${pathname === link.href && "hover:bg-primary-foreground/30 bg-primary-foreground/30"}`} href={link.href}>{link.label}</Link>
                   </li>
@@ -46,7 +46,7 @@ const NavBar = () => {
               }
             </ul>
           </div>
-          <UserShortCut user={session.user} />
+          <UserShortCut user={user} />
         </nav>
       </div>
     </div>

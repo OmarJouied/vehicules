@@ -12,14 +12,14 @@ export const metadata: Metadata = {
 const page = async () => {
   const rechangeColumns: string[] = ["n_bon", "matricule", "destination", "specification", "reference", "qte", "prix_unitere", "extern", "date",];
   const res = await GET({ url: '/rechanges', method: 'GET' } as Request);
-  const { rechanges, message } = await res.json();
+  const { data: rechanges, message } = await res.json();
 
   if (message) {
     return <Unauthorize message={message} />
   }
 
   const resVehicules = await GETVehicules({} as Request);
-  const { vehicules } = await resVehicules.json();
+  const { data: vehicules } = await resVehicules.json();
 
   return (
     <MainContent

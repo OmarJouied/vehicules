@@ -1,10 +1,13 @@
-import DepenseSupplementaire from "@/models/DepenseSupplementaire";
 import Vehicule from "@/models/Vehicule";
 import ResponseType from "@/types/ResponseType";
-import { wrapperEndPoints } from "@/utils/backend-functions";
+import { simplifyVehicules, wrapperEndPoints } from "@/utils/backend-functions";
+import { pageRowsLength } from "..";
 
 const GET = wrapperEndPoints(async (req: Request) => {
   try {
+    const { searchParams } = new URL(req.url, `http://localhost:3000`);
+    const more = searchParams.get('more');
+
     const vehicules = await Vehicule.aggregate([
       {
         $lookup: {
@@ -40,26 +43,14 @@ const GET = wrapperEndPoints(async (req: Request) => {
                 valeur: { $last: "$valeur" }
               }
             },
-            // {
-            //   $sort: {
-            //     'date': -1
-            //   }
-            // },
-            // {
-            //   $limit: 1
-            // },
-            // {
-            //   $project: { "type_depense": 1, "_id": 0 }
-            // },
-            // {
-            //   $unwind: "$type_carburant"
-            // },
           ]
         },
       },
+      { $skip: pageRowsLength * Number(more) },
+      { $limit: pageRowsLength },
     ]).sort({ "matricule": 1 });
 
-    return Response.json({ vehicules }, { status: 200 });
+    return Response.json({ data: simplifyVehicules(vehicules) }, { status: 200 });
   } catch {
     return Response.json({ error: true, message: "Erreur de chargement des donnees" } as ResponseType, { status: 500 });
   }
