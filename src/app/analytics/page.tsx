@@ -31,6 +31,8 @@ export default async function Home({ searchParams: { du, au } }: { searchParams:
     "val_carburant_ext",
     "val_rechange_ttc",
     "val_rechange",
+    "val_rechange_ext_ttc",
+    "val_rechange_ext",
     "con%",
     "visite_technique",
     "carnet_metrologe",

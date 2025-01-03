@@ -43,6 +43,7 @@ import { useSearchParams } from "next/navigation"
 import ColumnVisible from "./ColumnVisible"
 import { useToast } from "@/hooks/use-toast"
 import ReadMore from "./ReadMore"
+import PrintTable from "./PrintTable"
 
 function useSkipper() {
   const shouldSkipRef = useRef(true)
@@ -162,6 +163,8 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
         "visite_technique",
         "val_rechange_ttc",
         "val_rechange",
+        "val_rechange_ext_ttc",
+        "val_rechange_ext",
       ]);
       (table.options.meta as any)?.updateData(calculate);
     }
@@ -235,6 +238,20 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                   <span>Imprimante</span>
                   <PrinterIcon />
                 </Button>
+                <PrintTable
+                  target={title}
+                  data={
+                    table.getFilteredSelectedRowModel().rows.length > 0 ?
+                      table.getSelectedRowModel().rows.map(row => Object.fromEntries(row.getVisibleCells().slice(1).map(cell => [cell.column.id, cell.getValue()])))
+                      :
+                      table.getRowModel().rows.map(row => Object.fromEntries(row.getVisibleCells().slice(1).map(cell => [cell.column.id, cell.getValue()])))
+                  }
+                  date={(() => {
+                    const du = search.get('du');
+                    const au = search.get('au');
+                    return (du && au ? [du, au].join(' ... ') : du ?? au) ?? "";
+                  })()}
+                />
                 {table.getFilteredSelectedRowModel().rows.length > 0 && !["vidange", "analytics"].includes(title) && <DeleteItems ids={getIds(table as any)} target={title} table={table} />}
                 {table.getFilteredSelectedRowModel().rows.length > 0 && !["vidange", "analytics"].includes(title) && (
                   <EditData fields={columns.slice(1).map((col: any) => col.accessorKey)} data={table.getSelectedRowModel().rows.map(row => row.original)} target={title} table={table} />

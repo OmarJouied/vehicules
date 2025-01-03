@@ -29,7 +29,7 @@ export const recalcule = (table: Table<any>, fields: string[]) => {
 }
 
 export const jsonToPdf = (title: string, body: string[][], head: string[][], date?: any) => {
-  const doc = new jsPDF("portrait");
+  const doc = new jsPDF("landscape", "mm", "a4");
 
   const img = new Image;
   img.onload = function () {

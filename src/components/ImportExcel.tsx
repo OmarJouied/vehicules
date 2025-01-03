@@ -32,7 +32,16 @@ const ImportExcel = ({ fields, target }: { fields: string[]; target: string }) =
     if (file && ["csv", "xlsx"].includes(extension + "")) {
       const data = await parseExcel(file) as any[];
 
-      setData(data.map(row => fields.reduce((init, item) => ({ ...init, [item]: row[item] ?? "" }), {})))
+      setData(
+        data.map(
+          row => (
+            {
+              ...Object.fromEntries(fields.map(i => [i, ""])),
+              ...Object.fromEntries(Object.entries(row).map(([key, value]) => [key.toLowerCase(), value]))
+            }
+          )
+        )
+      )
     }
     e.target.value = ''
   };

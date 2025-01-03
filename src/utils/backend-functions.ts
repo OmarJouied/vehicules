@@ -76,7 +76,9 @@ export const simplifyAnalytics = ({
     val_carburant_ext = 0,
 
     val_rechange_ttc = 0,
-    val_rechange = 0;
+    val_rechange = 0,
+    val_rechange_ext_ttc = 0,
+    val_rechange_ext = 0;
 
   vehiculeDeplacements.forEach(vehiculeDeplacement => {
     kilometrage += vehiculeDeplacement.kilometrage ?? 0;
@@ -104,8 +106,11 @@ export const simplifyAnalytics = ({
   })
 
   vehiculeRechanges.forEach(vehiculeRechange => {
-    val_rechange_ttc += (vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0);
-    val_rechange += (vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0) / (1 + (taxe.find(t => t.taxe_name === 'rechange' && t.date <= vehiculeRechange.date!)?.taxe_valeur ?? 0) / 100);
+    val_rechange_ttc += !vehiculeRechange.extern ? ((vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0)) : 0;
+    val_rechange += !vehiculeRechange.extern ? ((vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0) / (1 + (taxe.find(t => t.taxe_name === 'rechange' && t.date <= vehiculeRechange.date!)?.taxe_valeur ?? 0) / 100)) : 0;
+
+    val_rechange_ext_ttc += vehiculeRechange.extern ? ((vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0)) : 0;
+    val_rechange_ext += vehiculeRechange.extern ? ((vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0) / (1 + (taxe.find(t => t.taxe_name === 'rechange' && t.date <= vehiculeRechange.date!)?.taxe_valeur ?? 0) / 100)) : 0;
   })
 
   return Object.fromEntries(Object.entries({
@@ -125,6 +130,8 @@ export const simplifyAnalytics = ({
     val_carburant_ext: val_carburant_ext.toFixed(2),
     val_rechange_ttc: val_rechange_ttc.toFixed(2),
     val_rechange: val_rechange.toFixed(2),
+    val_rechange_ext_ttc: val_rechange_ext_ttc.toFixed(2),
+    val_rechange_ext: val_rechange_ext.toFixed(2),
     ...Object.fromEntries([
       ["visite_technique", "0.00"],
       ["carnet_metrologe", "0.00"],
