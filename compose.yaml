@@ -8,9 +8,10 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '3000:3000' 
+      - 3000:3000
     environment:
-      - MONGODB_URI=mongodb://db/mongodb-data                 
+      - MONGODB_URI=mongodb://db/mongodb-data  
+      - NEXTAUTH_SECRET=PBVR9Cy8VbMhLcqSCtRXl5x5ALOSyd2FmIrCwG8do3I=               
     develop:
       watch:
         - path: ./package.json
@@ -27,7 +28,7 @@ services:
   mongodb:
     image: mongo:latest
     ports:
-      - '27017:27017'
+      - 27017:27017
     volumes:
       - mongodb-data:/data/db
 
