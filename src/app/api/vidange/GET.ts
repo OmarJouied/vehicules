@@ -23,8 +23,8 @@ const GET = wrapperEndPoints(async (req: Request) => {
     ]).sort({ "_id": 1 });
 
     return Response.json({ data: simplifyVidange(vidangeState) }, { status: 200 });
-  } catch {
-    return Response.json({ error: true, message: "Erreur de chargement des donnees" } as ResponseType, { status: 500 });
+  } catch (err: any) {
+    return Response.json({ error: true, message: "Erreur de chargement des donnees: " + err.message } as ResponseType, { status: 500 });
   }
 })
 

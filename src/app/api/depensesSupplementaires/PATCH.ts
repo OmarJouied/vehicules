@@ -27,8 +27,8 @@ const updateDepenseSupplementaire = async ({
 
   try {
     await vehicule.save();
-  } catch {
-    throw new Error("Erreur lors de la mise a jour du document")
+  } catch (err: any) {
+    throw new Error("Erreur lors de la mise a jour du document: " + err.message);
   }
 }
 

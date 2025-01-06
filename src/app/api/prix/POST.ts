@@ -26,8 +26,8 @@ const createPrix = async ({
     });
 
     return { prix_name, _id: newPrix._id }
-  } catch {
-    throw new Error("Erreur lors de la creation de ce document")
+  } catch (err: any) {
+    throw new Error("Erreur lors de la creation de ce document: " + err.message);
   }
 }
 

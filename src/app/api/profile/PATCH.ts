@@ -25,8 +25,8 @@ const PATCH = wrapperEndPoints(async (req: Request) => {
 
     try {
       await user.save();
-    } catch {
-      throw new Error("Erreur lors de la mise a jour du document")
+    } catch (err: any) {
+      throw new Error("Erreur lors de la mise a jour du document: " + err.message);
     }
 
     return Response.json({ error: false, message: "Mis a jour avec succes" } as ResponseType, { status: 202 });

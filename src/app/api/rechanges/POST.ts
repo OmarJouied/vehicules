@@ -22,8 +22,8 @@ const createRechange = async ({
       n_bon, matricule, destination, specification, reference, qte, prix_unitere, date: new NormalDate(date as any).parse(), extern: (extern as any) === "oui" ? true : undefined,
     });
     return { n_bon, _id: newRechange._id }
-  } catch {
-    throw new Error("Erreur lors de la creation de ce document");
+  } catch (err: any) {
+    throw new Error("Erreur lors de la creation de ce document: " + err.message);
   }
 }
 

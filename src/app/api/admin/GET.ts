@@ -7,8 +7,8 @@ const GET = wrapperEndPoints(async (req: any) => {
     const admin = await User.findOne({ permissions: '*' });
 
     return Response.json({ admin }, { status: 200 })
-  } catch {
-    return Response.json({ error: true, message: "Erreur de chargement des donnees" } as ResponseType, { status: 500 })
+  } catch (err: any) {
+    return Response.json({ error: true, message: "Erreur de chargement des donnees: " + err.message } as ResponseType, { status: 500 })
   }
 })
 

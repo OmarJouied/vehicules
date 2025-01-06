@@ -9,8 +9,8 @@ const DELETE = wrapperEndPoints(async (req: Request) => {
     await VehiculeTypeCarburant.deleteMany({ _id: ids });
 
     return Response.json({ error: false, message: "Supprime avec succes" } as ResponseType, { status: 202 });
-  } catch {
-    return Response.json({ error: true, message: "Erreur lors de la suppression du document" } as ResponseType, { status: 500 })
+  } catch (err: any) {
+    return Response.json({ error: true, message: "Erreur lors de la suppression du document: " + err.message } as ResponseType, { status: 500 })
   }
 })
 

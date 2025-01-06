@@ -10,8 +10,8 @@ const GET = wrapperEndPoints(async (req: any) => {
     const user = await User.findById(session?.user.id, { "__v": 0, permissions: 0 });
 
     return Response.json({ user, nom: session?.user.name }, { status: 200 })
-  } catch {
-    return Response.json({ error: true, message: "Erreur de chargement des donnees" } as ResponseType, { status: 500 })
+  } catch (err: any) {
+    return Response.json({ error: true, message: "Erreur de chargement des donnees: " + err.message } as ResponseType, { status: 500 })
   }
 })
 

@@ -26,8 +26,8 @@ const createDepenseSupplementaire = async ({
     });
 
     return { matricule, _id: newDepenseSupplementaire._id }
-  } catch {
-    throw new Error("Erreur lors de la creation de ce document")
+  } catch (err: any) {
+    throw new Error("Erreur lors de la creation de ce document: " + err.message);
   }
 }
 

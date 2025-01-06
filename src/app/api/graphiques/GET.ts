@@ -81,8 +81,8 @@ const GET = wrapperEndPoints(async (req: Request) => {
 
     // return Response.json({ deplacementsGraph, rechangesGraph }, { status: 200 });
     return Response.json({ years, matriculesDepls, deplacementsGraph: simplifyGraph(deplacementsGraph, rechangesGraph, { month, year }, years) }, { status: 200 });
-  } catch {
-    return Response.json({ error: true, message: "Erreur de chargement des donnees" } as ResponseType, { status: 500 });
+  } catch (err: any) {
+    return Response.json({ error: true, message: "Erreur de chargement des donnees: " + err.message } as ResponseType, { status: 500 })
   }
 })
 
