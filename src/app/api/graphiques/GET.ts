@@ -36,7 +36,7 @@ const GET = wrapperEndPoints(async (req: Request) => {
       },
     ]).sort({ "_id": 1 });
 
-    const [{ min, max }] = await Deplacement.aggregate([
+    const [{ min = 0, max = 0 }] = await Deplacement.aggregate([
       {
         $group: {
           _id: null,

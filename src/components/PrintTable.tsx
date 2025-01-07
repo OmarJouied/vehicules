@@ -15,19 +15,19 @@ import { useReactToPrint } from "react-to-print"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table"
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState } from "@tanstack/react-table"
 import Image from "next/image"
-import { columns } from "./columns"
+import { columns as Columns } from "./columns"
 
-export default function PrintTable({ data, target, date }: { data: any; target?: string; date?: string }) {
+export default function PrintTable({ data, columns, target, date }: { data: any; columns: any; target?: string; date?: string }) {
   const [open, setOpen] = useState(false);
   const contentRef = useRef(null);
   const reactToPrintFn = useReactToPrint({
     contentRef,
     documentTitle: target,
   });
-
+  console.log({ columns })
   const table = useReactTable({
     data,
-    columns: columns(Object.keys(data[0])),
+    columns: Columns(columns),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),

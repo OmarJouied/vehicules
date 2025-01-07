@@ -234,10 +234,10 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                 <Button className='bg-primary text-white p-4 rounded-md cursor-pointer' onClick={exportXlsx}>
                   exporter excel
                 </Button>
-                <Button onClick={printTable} className='bg-primary text-white p-4 rounded-md cursor-pointer'>
+                {/* <Button onClick={printTable} className='bg-primary text-white p-4 rounded-md cursor-pointer'>
                   <span>Imprimante</span>
                   <PrinterIcon />
-                </Button>
+                </Button> */}
                 <PrintTable
                   target={title}
                   data={
@@ -246,6 +246,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                       :
                       table.getRowModel().rows.map(row => Object.fromEntries(row.getVisibleCells().slice(1).map(cell => [cell.column.id, cell.getValue()])))
                   }
+                  columns={table.getAllColumns().filter(col => col.getIsVisible()).slice(1).map(col => col.id)}
                   date={(() => {
                     const du = search.get('du');
                     const au = search.get('au');
