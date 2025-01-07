@@ -15,7 +15,7 @@ export default async function Home() {
         </p>
       </div>
       <div className="flex justify-center">
-        <Image src="/leading-img.png" alt="Application Logo" width={500} height={500} />
+        <Image className="object-contain" src="/leading-img.png" alt="Application Logo" width={500} height={500} />
       </div>
     </main>
   )
