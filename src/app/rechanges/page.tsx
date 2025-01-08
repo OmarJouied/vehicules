@@ -23,7 +23,7 @@ const page = async () => {
 
   return (
     <MainContent
-      data={rechanges.map((deplacement: any) => ({ ...deplacement, date: new NormalDate(deplacement.date).simplify() }))}
+      data={rechanges.map((rechange: any) => ({ ...rechange, date: new NormalDate(rechange.date).simplify() }))}
       dataColumns={rechangeColumns}
       title="rechanges"
       externalData={vehicules.map((vehicule: any) => vehicule.matricule)}

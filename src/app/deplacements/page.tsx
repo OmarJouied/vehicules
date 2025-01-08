@@ -34,8 +34,8 @@ const page = async () => {
   const prixCurburant = prix.filter((item: any) => item.prix.est_carburant)
 
   const schema = {
-    lub: prix?.find((item: any) => item._id === "lub").prix.valeur,
-    vehiculeCurburants: vehicules.map(({ matricule }: any) => (matricule)).map((matr: string) => ({ matricule: matr, carburantValeur: prixCurburant?.find((item: any) => item._id === vehiculeTypeCarburant.find(({ matricule }) => matr === matricule)?.type_carburant)?.prix?.valeur }))
+    lub: prix?.find((item: any) => item._id === "lub")?.prix?.valeur ?? 0,
+    vehiculeCurburants: vehicules.map(({ matricule }: any) => (matricule)).map((matr: string) => ({ matricule: matr, carburantValeur: prixCurburant?.find((item: any) => item._id === vehiculeTypeCarburant.find(({ matricule }) => matr === matricule)?.type_carburant)?.prix?.valeur ?? 0 }))
   }
 
   return (
