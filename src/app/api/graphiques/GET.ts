@@ -36,7 +36,7 @@ const GET = wrapperEndPoints(async (req: Request) => {
       },
     ]).sort({ "_id": 1 });
 
-    const [{ min, max }] = [...await Deplacement.aggregate([
+    const { min, max } = (await Deplacement.aggregate([
       {
         $group: {
           _id: null,
@@ -44,7 +44,7 @@ const GET = wrapperEndPoints(async (req: Request) => {
           max: { $max: { $year: "$date" } },
         },
       },
-    ]).sort({ "_id": 1 }) ?? { min: 0, max: 0 }];
+    ]).sort({ "_id": 1 })).pop() ?? { min: 0, max: 0 };
 
     const matriculesDepls = await Deplacement.aggregate([
       {
