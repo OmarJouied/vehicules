@@ -15,8 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { useContext, useState } from "react"
-import { contextGraphiques } from "./GraphiquesContent"
+import { useState } from "react"
 
 export function GraphiquesMatriculesChoise({ choises, values, onChange }: { choises: string[]; values: string[]; onChange: ({ target: { value } }: any) => void }) {
   const [open, setOpen] = useState(false);

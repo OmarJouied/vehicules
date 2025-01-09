@@ -27,7 +27,7 @@ const NavBar = () => {
         </svg>
       </button>
       <div className={`flex justify-end z-30 fixed inset-0 transition-transform ease-linear duration-75 bg-gray-800/25 ${isOpen ? "translate-x-0" : "opacity-0 translate-x-full"}`}>
-        <nav className="gap-2.5 flex flex-col w-5/6 max-w-sm py-6 px-6 bg-primary border-r overflow-y-auto">
+        <nav className="gap-2.5 flex flex-col w-full max-w-sm py-6 px-6 bg-primary border-r overflow-y-auto">
           <div className="flex items-center mb-1.5">
             <button className="p-2 rounded-md hover:bg-primary-foreground/10" onClick={() => setIsOpen(false)}>
               <svg className="h-6 w-6 text-white cursor-pointer" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

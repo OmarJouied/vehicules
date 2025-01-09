@@ -1,6 +1,6 @@
 "use client"
 
-import { LegacyRef, MouseEventHandler, useCallback, useContext, useEffect, useRef, useState } from "react"
+import { LegacyRef, useCallback, useContext, useEffect, useRef, useState } from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ChevronDown, PrinterIcon, SearchIcon } from "lucide-react"
+import { ChevronDown, SearchIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/table"
 import { VehiculeType } from "@/models/Vehicule"
 import DeleteItems from "./DeleteItems"
-import { getIds, jsonToPdf, recalcule, toXlsx } from "@/utils/frontend-functions"
+import { getIds, recalcule, toXlsx } from "@/utils/frontend-functions"
 import EditData from "./EditData"
 import { Label } from "./ui/label"
 import PageResize from "./PageResize"
@@ -41,7 +41,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { context } from "@/containers/MainContent"
 import { useSearchParams } from "next/navigation"
 import ColumnVisible from "./ColumnVisible"
-import { useToast } from "@/hooks/use-toast"
 import ReadMore from "./ReadMore"
 import PrintTable from "./PrintTable"
 
@@ -110,29 +109,15 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
   })
   const [size, setSize] = useState(table.initialState.pagination.pageSize)
 
-  const exportXlsx = () => {
+  const exportXlsx = useCallback(() => {
     toXlsx(title,
       table.getFilteredSelectedRowModel().rows.length > 0 ?
         table.getSelectedRowModel().rows.map(row => Object.fromEntries(row.getVisibleCells().slice(1).map(cell => [cell.column.id, cell.getValue()])))
         :
         table.getRowModel().rows.map(row => Object.fromEntries(row.getVisibleCells().slice(1).map(cell => [cell.column.id, cell.getValue()]))))
-  }
+  }, [table.getAllColumns().filter(col => col.getIsVisible()).length, size, title]);
 
-  const printTable = () => {
-    const headers = table.getHeaderGroups()?.[0].headers.slice(1).map(head => head.id);
-    const du = search.get('du');
-    const au = search.get('au');
-    const dates = (du && au ? [du, au].join(' ... ') : du ?? au) ?? ""
-    jsonToPdf(
-      `Fiche des ${title}`,
-      table.getFilteredSelectedRowModel().rows.length > 0 ?
-        table.getSelectedRowModel().rows.map(row => [...row.getVisibleCells().slice(1).map(cell => cell.getValue()), ...Array(headers.length - row.getVisibleCells().slice(1).map(cell => cell.getValue()).length).fill(0)]) : table.getRowModel().rows.map(row => [...row.getVisibleCells().slice(1).map(cell => cell.getValue()), ...Array(headers.length - row.getVisibleCells().slice(1).map(cell => cell.getValue()).length).fill(0)]),
-      [headers],
-      dates
-    );
-  }
-
-  const handleChosePrint = (type: "Page" | "Tous" | "Choisi") => {
+  const handleChosePrint = useCallback((type: "Page" | "Tous" | "Choisi") => {
     setSelected(type);
 
     switch (type) {
@@ -144,7 +129,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
         table.setPageSize(data.length);
         break;
     }
-  }
+  }, []);
 
   useEffect(() => {
     if (title === 'analytics') {
@@ -176,8 +161,8 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
         <div className="flex flex-wrap gap-4 items-center">
           {title === "vidange" && (
             <>
-              <Label className="flex flex-col gap-2">
-                <span>vidange</span>
+              <Label className="flex gap-2 items-center">
+                <span className="font-bold capitalize text-[1rem]">vidange:</span>
                 <RadioGroup defaultValue="" onValueChange={
                   (value) =>
                     table.getColumn("vidange_changer")?.setFilterValue(value)
@@ -197,8 +182,8 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                   </Label>
                 </RadioGroup>
               </Label>
-              <Label className="flex flex-col gap-2">
-                <span>filter</span>
+              <Label className="flex gap-2 items-center">
+                <span className="font-bold capitalize text-[1rem]">filter:</span>
                 <RadioGroup defaultValue="" onValueChange={
                   (value) =>
                     table.getColumn("filter_changer")?.setFilterValue(value)
@@ -234,10 +219,6 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                 <Button className='bg-primary text-white p-4 rounded-md cursor-pointer' onClick={exportXlsx}>
                   exporter excel
                 </Button>
-                {/* <Button onClick={printTable} className='bg-primary text-white p-4 rounded-md cursor-pointer'>
-                  <span>Imprimante</span>
-                  <PrinterIcon />
-                </Button> */}
                 <PrintTable
                   target={title}
                   data={
@@ -399,7 +380,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Label className="flex gap-1 items-center h-9">
             <span>N. Lignes</span>
             <PageResize size={size} setSize={setSize} table={table} />

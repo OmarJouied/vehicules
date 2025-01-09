@@ -16,7 +16,6 @@ const GraphiquesContent = ({ data, years, matriculesDepls }: { data: any[]; year
   return (
     <main className='container print:p-0 print:m-0 print:min-w-full print:h-[100vh] print:bg-inherit'>
       <contextGraphiques.Provider value={{ currentData, setCurrentData, years, matriculesDepls }}>
-        {/* <DataHeader fields={dataColumns} title={title} /> */}
         <Graphiques chartData={currentData} />
         <GraphiquesFilter />
       </contextGraphiques.Provider>

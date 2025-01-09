@@ -62,15 +62,12 @@ export const jsonToPdf = (title: string, body: string[][], head: string[][], dat
         fontStyle: "normal"
       },
       headStyles: {
-        // fontSize: 4,
         cellPadding: 1,
         overflow: "linebreak",
         cellWidth: "wrap",
         halign: "center",
-        // lineColor: '#000',
         lineWidth: .1,
         fontStyle: "bold"
-
       },
     })
 
@@ -93,53 +90,6 @@ export const toXlsx = (title: string, data: any[]) => {
 
 export const simplify = (data: any) => {
   return Object.fromEntries(Object.entries(data).filter(item => item[1] !== ""))
-}
-
-export const printJSONTable = (header: string[], data: any[]) => {
-  data.map(row => header.map(head => row[head] ?? ""));
-  const wind = window.open();
-  const div = document.createElement("div");
-  div.innerHTML = `<table border=1 style="width: 100%;border-collapse: collapse"><thead>
-  <tr style="background: #ccc">
-    ${header.map(head => `<th style="text-transform: capitalize; padding: 0.1875rem .5rem 0.1875rem .25rem;">${head}</th>`).join("")}
-  </tr>
-  </thead>
-  <tbody>
-  ${data.map(row => `
-    <tr>${header.map(head => `
-      <td style="white-space: nowrap; padding: 0.1875rem .5rem 0.1875rem .25rem; line-height: 1;">
-        ${row[head] ?? ""}
-      </td>
-      `).join("")}
-    </tr>
-  `).join("")}
-  </tbody>
-</table>`;
-  div.className = "fixed p-4"
-  document.body.appendChild(div)
-  const zoomIn = div.getBoundingClientRect().width / window.outerWidth;
-
-
-  wind?.document?.write(`<div style="transform: scale(${zoomIn > 1 ? 1 / zoomIn : zoomIn}); transform-origin: center;position: absolute; top: 0; left: 0; padding: 1rem"><table border=1 style="width: 100%;border-collapse: collapse"><thead>
-  <tr style="background: #ccc">
-    ${header.map(head => `<th style="text-transform: capitalize; padding: 0.1875rem .5rem 0.1875rem .25rem;">${head}</th>`).join("")}
-  </tr>
-  </thead>
-  <tbody>
-  ${data.map(row => `
-    <tr>${header.map(head => `
-      <td style="white-space: nowrap; padding: 0.1875rem .5rem 0.1875rem .25rem; line-height: 1;">
-        ${row[head] ?? ""}
-      </td>
-      `).join("")}
-    </tr>
-  `).join("")}
-  </tbody>
-</table>
-</div>
-`);
-  wind?.window.print();
-  console.log({ innerwidth: wind?.innerWidth, outerwidth: wind?.outerWidth })
 }
 
 export class SpecificActions {
@@ -189,7 +139,7 @@ export class SpecificActions {
         taxe_tenage: "", type: "", type_carburant: "", vignte: "", visite_technique: "", onssa: ""
       },
       requiredField: ["matricule"],
-      inputsSpecial(data: any, setData: any, choises?: string[], editing?: boolean) {
+      inputsSpecial(data: any, setData: any, choises?: string[]) {
         return {
           datemc: InputOTPDate({
             date: data.datemc ? data.datemc + "" : "",
@@ -229,7 +179,7 @@ export class SpecificActions {
         filter_changer: undefined
       },
       requiredField: ["matricule", "carburant_valeur", "lub_valeur",],
-      inputsSpecial(data: DeplacementType & { carburant_valeur: string, lub_valeur: string, kilometrage_entre: string, kilometrage_sorte: string }, setData: any, choises?: any, editing?: boolean) {
+      inputsSpecial(data: DeplacementType & { carburant_valeur: string, lub_valeur: string, kilometrage_entre: string, kilometrage_sorte: string }, setData: any, choises?: any) {
         return {
           kilometrage_entre: InputDate({
             id: "lub_valeur",
@@ -506,8 +456,8 @@ export class SpecificActions {
     return this?.[this.target]?.defaultData;
   }
 
-  getInputsSpecial(data: any, setData: any, choises?: string[], editing?: boolean) {
-    return this?.[this.target]?.inputsSpecial(data, setData, choises, editing);
+  getInputsSpecial(data: any, setData: any, choises?: string[]) {
+    return this?.[this.target]?.inputsSpecial(data, setData, choises);
   }
 
   getFields(fields: string[]) {

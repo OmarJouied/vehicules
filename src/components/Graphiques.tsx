@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, Line, LineChart, Tooltip, XAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 
 import {
   ChartConfig,
@@ -10,21 +10,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-
-const chartData = [
-  { month: "January", kilometrage: 186, carburant: 80, carb_ext: 326, lub: 250, },
-  { month: "February", kilometrage: 305, carburant: 200, carb_ext: 302, lub: 131, },
-  { month: "March", kilometrage: 237, carburant: 120, carb_ext: 186, lub: 336, },
-  { month: "April", kilometrage: 73, carburant: 190, carb_ext: 55, lub: 244, },
-  { month: "May", kilometrage: 209, carburant: 130, carb_ext: 308, lub: 313, },
-  { month: "June", kilometrage: 214, carburant: 140, carb_ext: 309, lub: 216, },
-  { month: "July", kilometrage: 282, carburant: 24, carb_ext: 38, lub: 242, },
-  { month: "August", kilometrage: 232, carburant: 142, carb_ext: 215, lub: 282, },
-  { month: "September", kilometrage: 67, carburant: 187, carb_ext: 289, lub: 43, },
-  { month: "October", kilometrage: 289, carburant: 20, carb_ext: 150, lub: 185, },
-  { month: "November", kilometrage: 227, carburant: 138, carb_ext: 323, lub: 9, },
-  { month: "December", kilometrage: 256, carburant: 103, carb_ext: 30, lub: 20, },
-]
 
 const chartConfig = {
   kilometrage: {

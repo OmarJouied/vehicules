@@ -1,10 +1,9 @@
-import { SearchSelectChoise } from './SearchSelectChoise'
 import { GraphiquesMatriculesChoise } from './GraphiquesMatriculesChoise';
 import GraphiquesDateFilter from './GraphiquesDateFilter';
-import { FormEventHandler, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { FormEventHandler, useContext, useEffect, useMemo, useState } from 'react';
 import { contextGraphiques } from './GraphiquesContent';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { PrinterIcon, SearchIcon } from 'lucide-react';
+import { SearchIcon } from 'lucide-react';
 import { Button } from './ui/button';
 import Printer from './Printer';
 

@@ -10,8 +10,8 @@ services:
     ports:
       - 3000:3000
     environment:
-      - MONGODB_URI=mongodb://db/mongodb-data  
-      - NEXTAUTH_SECRET=PBVR9Cy8VbMhLcqSCtRXl5x5ALOSyd2FmIrCwG8do3I=               
+      - MONGODB_URI=mongodb://db/mongodb-data
+      - NEXTAUTH_SECRET=""
     develop:
       watch:
         - path: ./package.json

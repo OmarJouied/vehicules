@@ -1,5 +1,6 @@
 import Deplacement from "@/models/Deplacement";
 import Rechange from "@/models/Rechange";
+import Vehicule from "@/models/Vehicule";
 import ResponseType from "@/types/ResponseType";
 import { simplifyGraph, wrapperEndPoints } from "@/utils/backend-functions";
 
@@ -46,7 +47,7 @@ const GET = wrapperEndPoints(async (req: Request) => {
       },
     ]).sort({ "_id": 1 })).pop() ?? { min: 0, max: 0 };
 
-    const matriculesDepls = await Deplacement.aggregate([
+    const matriculesDepls = await Vehicule.aggregate([
       {
         $group: {
           _id: "$matricule",
@@ -79,7 +80,6 @@ const GET = wrapperEndPoints(async (req: Request) => {
 
     const years = Array.from({ length: max - min + 1 }, (_: any, k: any) => k + min + "")
 
-    // return Response.json({ deplacementsGraph, rechangesGraph }, { status: 200 });
     return Response.json({ years, matriculesDepls, deplacementsGraph: simplifyGraph(deplacementsGraph, rechangesGraph, { month, year }, years) }, { status: 200 });
   } catch (err: any) {
     return Response.json({ error: true, message: "Erreur de chargement des donnees: " + err.message } as ResponseType, { status: 500 })

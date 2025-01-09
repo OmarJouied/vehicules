@@ -12,15 +12,15 @@ const GraphiquesDateFilter = ({ onChange, year, month, months }: { year: string;
     <>
       <Label className={`flex items-center gap-4 flex-wrap w-56`}>
         <span className={`text-right capitalize`}>
-          year
+          annee
         </span>
-        <SearchSelectChoise choises={years} value={year} name='year' onChange={({ target: { value } }) => onChange((prev: any) => ({ ...prev, year: value }))} />
+        <SearchSelectChoise choises={years} value={year} name='annee' onChange={({ target: { value } }) => onChange((prev: any) => ({ ...prev, year: value }))} />
       </Label>
       <Label className={`flex items-center gap-4 flex-wrap w-56`}>
         <span className={`text-right capitalize`}>
-          month
+          mois
         </span>
-        <SearchSelectChoise choises={months} value={month} name='month' onChange={({ target: { value } }) => onChange((prev: any) => ({ ...prev, month: value }))} />
+        <SearchSelectChoise choises={months} value={month} name='mois' onChange={({ target: { value } }) => onChange((prev: any) => ({ ...prev, month: value }))} />
       </Label>
     </>
   )

@@ -116,7 +116,6 @@ const GET = wrapperEndPoints(async (req: Request) => {
 
     return Response.json({
       data: analytics
-        // .filter(row => row.matricule === '001246-44')
         .map(row => simplifyAnalytics(
           row,
           prix,

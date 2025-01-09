@@ -1,9 +1,7 @@
 import {
   AlertDialog,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
@@ -13,7 +11,7 @@ import { Button } from "./ui/button"
 import { LegacyRef, useEffect, useRef, useState } from "react"
 import { useReactToPrint } from "react-to-print"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table"
-import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState } from "@tanstack/react-table"
+import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
 import Image from "next/image"
 import { columns as Columns } from "./columns"
 
@@ -24,7 +22,7 @@ export default function PrintTable({ data, columns, target, date }: { data: any;
     contentRef,
     documentTitle: target,
   });
-  console.log({ columns })
+
   const table = useReactTable({
     data,
     columns: Columns(columns),
@@ -123,18 +121,3 @@ export default function PrintTable({ data, columns, target, date }: { data: any;
     </AlertDialog>
   )
 }
-
-// import { useReactToPrint } from "react-to-print";
-// import { useRef } from "react";
-
-// export default function PrintTable() {
-//   const contentRef = useRef<HTMLDivElement>(null);
-//   const reactToPrintFn = useReactToPrint({ contentRef });
-
-//   return (
-//     <div>
-//       <button onClick={() => reactToPrintFn()}>Print</button>
-//       <div ref={contentRef}>Content to print</div>
-//     </div>
-//   );
-// }

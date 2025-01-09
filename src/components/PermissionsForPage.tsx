@@ -6,9 +6,9 @@ const PermissionsForPage = ({ page, permissions, setPermissions }: { page: strin
   const permissionsChoises = useMemo(() => ["Tous", "Lire", "Ecrire", "Modifier", "Supprimer",], []);
 
   return (
-    <div className='flex justify-between gap-2.5'>
+    <div className='flex justify-between gap-2.5 flex-wrap'>
       <h3>{page}</h3>
-      <div className="flex gap-2.5">
+      <div className="flex gap-2.5 flex-wrap">
         {
           permissionsChoises.map(permission => (
             <Label key={permission} className={`flex items-center gap-2.5 flex-wrap`}>

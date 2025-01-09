@@ -15,11 +15,11 @@ const Form = ({ fields, title, inputsSpecial, valueFields, setValueFields, reque
       <DialogTitle className='capitalize'>{title}</DialogTitle>
     </DialogHeader>
     <div className="relative flex-1 overflow-auto flex">
-      <div className={`grid grid-cols-1 gap-4 p-2 absolute w-full overflow-hidden ${"md:grid-cols-2"}`}>
+      <div className="grid grid-cols-[repeat(1,minmax(8rem,1fr))] md:grid-cols-2 gap-4 p-2 absolute w-full overflow-hidden">
         {
           fields.filter(field => title.includes("users") ? !pages.includes(field) : true).map((field) => (
-            <Label key={field} className={`flex items-center gap-4 flex-wrap`}>
-              <span className={`text-right capitalize ${"min-w-32"}`}>
+            <Label key={field} className={`flex items-center gap-4 flex-wrap col-span-2 md:col-span-1`}>
+              <span className={`text-right capitalize min-w-16 ${"md:min-w-32"}`}>
                 {field}
               </span>
               {

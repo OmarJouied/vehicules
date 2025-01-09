@@ -115,7 +115,7 @@ export default function EditData({ data, fields, editAction, target, table }: { 
         valueFields={currentData[index]}
         setValueFields={(field: string, value: string) => setCurrentData((prev: any) => ([...prev.slice(0, index), { ...prev[index], [field]: value }, ...prev.slice(index + 1)]))}
         requeredFields={getRequiredField()}
-        inputsSpecial={getInputsSpecial(currentData[index], editSpecial, externalData, true)}
+        inputsSpecial={getInputsSpecial(currentData[index], editSpecial, externalData)}
         handleEnregistrer={save}
         handleDecharge={cancel}
       >

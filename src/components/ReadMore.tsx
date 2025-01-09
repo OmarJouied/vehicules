@@ -18,7 +18,7 @@ const ReadMore = (
     try {
       setReadMoreText(prev => prev + "...");
       setReadMoreDisabled(true);
-      // fetch data
+
       const { data } = await fetch(`/api/${title}?more=${readMoreCounter + 1}`).then(res => res.json());
 
       if (data.length === 0) {
