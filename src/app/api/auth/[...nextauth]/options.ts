@@ -30,9 +30,6 @@ export const options: NextAuthOptions = {
     })
   ],
   callbacks: {
-    async redirect({ baseUrl }) {
-      return baseUrl;
-    },
     async jwt({ token, user }) {
       await connectDB();
       const { permissions } = await User.findById(token.sub);
