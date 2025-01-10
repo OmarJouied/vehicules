@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Button } from './ui/button';
 import { Check, ChevronDown } from 'lucide-react';
@@ -8,6 +8,16 @@ import { Label } from './ui/label';
 
 const ColumnVisible = ({ table }: { table: Table<any> }) => {
   const [open, setOpen] = useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (dropdownRef.current && open) {
+        dropdownRef.current.style.maxHeight = (window.innerHeight - dropdownRef.current.getBoundingClientRect().top) / 16 + 'rem';
+        dropdownRef.current.style.opacity = '1';
+      }
+    }, 0);
+  }, [open])
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -16,7 +26,7 @@ const ColumnVisible = ({ table }: { table: Table<any> }) => {
           Colonnes <ChevronDown className="ml-2 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="max-h-96 overflow-auto" align="end">
+      <DropdownMenuContent className="opacity-0 overflow-auto" align="end" ref={dropdownRef}>
         {table
           .getAllColumns()
           .filter((column) => column.getCanHide())
