@@ -106,11 +106,11 @@ export const simplifyAnalytics = ({
   })
 
   vehiculeRechanges.forEach(vehiculeRechange => {
-    val_rechange_ttc += !vehiculeRechange.extern ? ((vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0)) : 0;
-    val_rechange += !vehiculeRechange.extern ? ((vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0) / (1 + (taxe.find(t => t.taxe_name === 'rechange' && t.date <= vehiculeRechange.date!)?.taxe_valeur ?? 0) / 100)) : 0;
+    val_rechange += !vehiculeRechange.extern ? ((vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0)) : 0;
+    val_rechange_ttc += !vehiculeRechange.extern ? ((vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0) * (1 + (taxe.find(t => t.taxe_name === 'rechange' && t.date <= vehiculeRechange.date!)?.taxe_valeur ?? 0) / 100)) : 0;
 
-    val_rechange_ext_ttc += vehiculeRechange.extern ? ((vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0)) : 0;
-    val_rechange_ext += vehiculeRechange.extern ? ((vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0) / (1 + (taxe.find(t => t.taxe_name === 'rechange' && t.date <= vehiculeRechange.date!)?.taxe_valeur ?? 0) / 100)) : 0;
+    val_rechange_ext += vehiculeRechange.extern ? ((vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0)) : 0;
+    val_rechange_ext_ttc += vehiculeRechange.extern ? ((vehiculeRechange.prix_unitere ?? 0) * (vehiculeRechange.qte ?? 0) * (1 + (taxe.find(t => t.taxe_name === 'rechange' && t.date <= vehiculeRechange.date!)?.taxe_valeur ?? 0) / 100)) : 0;
   })
 
   return Object.fromEntries(Object.entries({
