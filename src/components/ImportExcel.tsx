@@ -13,12 +13,23 @@ const ImportExcel = ({ fields, target }: { fields: string[]; target: string }) =
       fileReader.readAsArrayBuffer(file);
       fileReader.onload = (e) => {
         const bufferArray = e.target?.result;
-        const wb = read(bufferArray, { type: "buffer" });
-        const wsname = wb.SheetNames[0];
+        const wb = read(bufferArray, { type: "binary", cellDates: true, cellText: false });
+
+        let indexSheet = 0;
+        if (typeof (wb.Workbook as any)?.WBView !== "undefined") {
+          if (Array.isArray((wb.Workbook as any).WBView) && (wb.Workbook as any).WBView.length > 0) {
+            indexSheet = (wb.Workbook as any).WBView[0].activeTab || 0;
+          }
+        }
+
+        const wsname = wb.SheetNames[indexSheet];
         const ws = wb.Sheets[wsname];
+        console.log({ wsname, ws: Object.values(ws).slice(1) })
         const data = utils.sheet_to_json(ws, {
-          raw: false
+          raw: false,
+          dateNF: "dd/mm/yyy"
         });
+        console.log({ data })
         res(data);
       };
       fileReader.onerror = (e) => {
