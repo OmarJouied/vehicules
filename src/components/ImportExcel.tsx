@@ -16,6 +16,7 @@ const ImportExcel = ({ fields, target }: { fields: string[]; target: string }) =
         const wb = read(bufferArray, { type: "buffer" });
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
+        console.log({ ws })
         const data = utils.sheet_to_json(ws);
         res(data);
       };

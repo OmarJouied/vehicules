@@ -2,8 +2,8 @@ import MainContent from "@/containers/MainContent"
 import { Metadata } from "next";
 import Unauthorize from "@/components/Unauthorize";
 import GET from "../api/rechanges/GET";
-import GETVehicules from "../api/vehicules/GET";
 import { NormalDate } from "@/utils/backend-functions";
+import Vehicule from "@/models/Vehicule";
 
 export const metadata: Metadata = {
   title: 'Rechanges'
@@ -18,15 +18,14 @@ const page = async () => {
     return <Unauthorize message={message} />
   }
 
-  const resVehicules = await GETVehicules({} as Request);
-  const { data: vehicules } = await resVehicules.json();
+  const matricules = await Vehicule.find({});
 
   return (
     <MainContent
       data={rechanges.map((rechange: any) => ({ ...rechange, date: new NormalDate(rechange.date).simplify() }))}
       dataColumns={rechangeColumns}
       title="rechanges"
-      externalData={vehicules.map((vehicule: any) => vehicule.matricule)}
+      externalData={matricules}
     />
   )
 }

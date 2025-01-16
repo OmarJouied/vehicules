@@ -8,6 +8,7 @@ export const metadata: Metadata = {
 }
 
 const page = async () => {
+  console.log(process.env.MONGODB_URI as string)
   const res = await GET({} as Request);
   const { admin, message } = await res.json();
 

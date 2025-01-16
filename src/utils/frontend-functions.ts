@@ -228,7 +228,7 @@ export class SpecificActions {
         if (data.qte_lub && +data.qte_lub < 0) return "Entrez une valeur positive pour qte_lub.";
         if (data.qte_carburant && +data.qte_carburant < 0) return "Entrez une valeur positive pour qte_carburant.";
         if (data.kilometrage && +data.kilometrage < 0) return "Entrez une valeur positive pour kilometrage.";
-        if (data.date && !`${data.date}`.match(/^\d{2}\/\d{2}\/\d{4}$/)) return "Entrez une valide valeur pour date.";
+        if (!data.date || !`${data.date}`.match(/^\d{2}\/\d{2}\/\d{4}$/)) return "Entrez une valide valeur pour date.";
       },
       getFields(fields: string[]) {
         return [...fields.slice(0, -1), "kilometrage_sorte", "kilometrage_entre", ...fields.slice(-1), "carburant_valeur", "lub_valeur"];
@@ -406,7 +406,7 @@ export class SpecificActions {
         prix_unitere: "",
         extern: "no"
       },
-      requiredField: ["matricule", "n_bon", "specification", "qte", "prix_unitere", "destination",],
+      requiredField: ["matricule", "n_bon", "specification", "qte", "destination",],
       inputsSpecial(data: RechangeType, setData: any, choises: any) {
         return {
           date: InputOTPDate({
@@ -425,11 +425,9 @@ export class SpecificActions {
       validate(data: RechangeType) {
         if (!data.n_bon) return "Merci de remplir le champ n_bon.";
         if (!data.matricule) return "Merci de remplir le champ matricule.";
-        if (!data.destination) return "Merci de remplir le champ destination.";
         if (!data.specification) return "Merci de remplir le champ specification.";
         if (!data.qte) return "Merci de remplir le champ qte.";
-        if (!data.prix_unitere) return "Merci de remplir le champ prix_unitere.";
-        if (data.date && !`${data.date}`.match(/^\d{2}\/\d{2}\/\d{4}$/)) return "Entrez une valide valeur pour date.";
+        if (!data.date || !`${data.date}`.match(/^\d{2}\/\d{2}\/\d{4}$/)) return "Entrez une valide valeur pour date.";
       },
       getFields(fields: string[]) {
         return fields;
