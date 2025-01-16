@@ -2,9 +2,8 @@ import MainContent from "@/containers/MainContent"
 import Deplacement from "@/models/Deplacement";
 import GET from "../api/deplacements/GET";
 import GETPrix from "../api/prix/GET";
-import GETVehiculeTypeCarburant from '../api/vehiculeTypeCarburant/GET'
 import { NormalDate } from "@/utils/backend-functions";
-import { VehiculeTypeCarburantType } from "@/models/VehiculeTypeCarburant";
+import VehiculeTypeCarburant from "@/models/VehiculeTypeCarburant";
 import { Metadata } from "next";
 import Unauthorize from "@/components/Unauthorize";
 import Vehicule from "@/models/Vehicule";
@@ -24,8 +23,7 @@ const page = async () => {
 
   const matricules = (await Vehicule.find({}, { matricule: 1, _id: 0 })).map(item => item.matricule);
 
-  const resVehiculeTypeCarburant = await GETVehiculeTypeCarburant({} as any);
-  const { data: vehiculeTypeCarburant }: { data: VehiculeTypeCarburantType[] } = await resVehiculeTypeCarburant.json();
+  const vehiculeTypeCarburant = await VehiculeTypeCarburant.find({}, { matricule: 1, type_carburant: 1, _id: 0 });
 
   const resPrix = await GETPrix({ url: '?currentPrix=1' } as any);
   const { data: prix } = await resPrix.json();
