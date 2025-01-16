@@ -50,7 +50,7 @@ export const simplifyAnalytics = ({
 ) => {
   const prix_lub = prix.filter(pr => pr.prix_name === "lub");
   const prix_carburant = prix.filter(pr => pr.prix_name !== "lub"); // يجب تحديثها لتتماشى مع تغيير مكان العربة
-  const carburant_base = typecarburants?.[0].type_carburant;
+  const carburant_base = typecarburants?.[0]?.type_carburant;
 
   const getTaxeCarb = (date: any) => {
     return taxe.find(t => t.taxe_name === carburant_base && t.date <= date!)?.taxe_valeur ?? 0;
