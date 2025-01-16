@@ -2,12 +2,12 @@ import MainContent from "@/containers/MainContent"
 import Deplacement from "@/models/Deplacement";
 import GET from "../api/deplacements/GET";
 import GETPrix from "../api/prix/GET";
-import GETVehicule from "../api/vehicules/GET";
 import GETVehiculeTypeCarburant from '../api/vehiculeTypeCarburant/GET'
 import { NormalDate } from "@/utils/backend-functions";
 import { VehiculeTypeCarburantType } from "@/models/VehiculeTypeCarburant";
 import { Metadata } from "next";
 import Unauthorize from "@/components/Unauthorize";
+import Vehicule from "@/models/Vehicule";
 
 export const metadata: Metadata = {
   title: 'Deplacements'
@@ -22,8 +22,7 @@ const page = async () => {
     return <Unauthorize message={message} />
   }
 
-  const resVehicule = await GETVehicule({} as any);
-  const { data: vehicules } = await resVehicule.json();
+  const matricules = (await Vehicule.find({}, { matricule: 1, _id: 0 })).map(item => item.matricule);
 
   const resVehiculeTypeCarburant = await GETVehiculeTypeCarburant({} as any);
   const { data: vehiculeTypeCarburant }: { data: VehiculeTypeCarburantType[] } = await resVehiculeTypeCarburant.json();
@@ -35,7 +34,7 @@ const page = async () => {
 
   const schema = {
     lub: prix?.find((item: any) => item._id === "lub")?.prix?.valeur ?? 0,
-    vehiculeCurburants: vehicules.map(({ matricule }: any) => (matricule)).map((matr: string) => ({ matricule: matr, carburantValeur: prixCurburant?.find((item: any) => item._id === vehiculeTypeCarburant.find(({ matricule }) => matr === matricule)?.type_carburant)?.prix?.valeur ?? 0 }))
+    vehiculeCurburants: matricules.map((matr: string) => ({ matricule: matr, carburantValeur: prixCurburant?.find((item: any) => item._id === vehiculeTypeCarburant.find(({ matricule }) => matr === matricule)?.type_carburant)?.prix?.valeur ?? 0 }))
   }
 
   return (

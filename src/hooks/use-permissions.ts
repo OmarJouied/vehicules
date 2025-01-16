@@ -6,6 +6,7 @@ export const usePermissions = () => {
   const { data: session } = useSession();
 
   useEffect(() => {
+    console.log({ session })
     setPages(
       getPages(session?.user?.permissions)
     );

@@ -16,8 +16,9 @@ const ImportExcel = ({ fields, target }: { fields: string[]; target: string }) =
         const wb = read(bufferArray, { type: "buffer" });
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
-        console.log({ ws })
-        const data = utils.sheet_to_json(ws);
+        const data = utils.sheet_to_json(ws, {
+          raw: false
+        });
         res(data);
       };
       fileReader.onerror = (e) => {
@@ -30,7 +31,7 @@ const ImportExcel = ({ fields, target }: { fields: string[]; target: string }) =
     const file = e.target.files && e.target.files[0];
     const extension = file?.name.split(".").pop();
 
-    if (file && ["csv", "xlsx"].includes(extension + "")) {
+    if (file && ["csv", "xlsx", ".xls"].includes(extension + "")) {
       const data = await parseExcel(file) as any[];
 
       setData(
@@ -51,7 +52,7 @@ const ImportExcel = ({ fields, target }: { fields: string[]; target: string }) =
     <>
       <Label className='bg-primary hover:bg-primary/90 text-white p-4 rounded-md cursor-pointer'>
         <span>importer excel</span>
-        <input onChange={toXlsx} type="file" className='hidden' accept='.xlsx, .csv' />
+        <input onChange={toXlsx} type="file" className='hidden' accept='.xlsx, .xls, .csv' />
       </Label>
       {data.length > 0 && (
         <ImportData data={data} columns={columns(fields)} target={target} />

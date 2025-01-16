@@ -1,10 +1,10 @@
 import DepenseSupplementaire from "@/models/DepenseSupplementaire";
 import MainContent from "@/containers/MainContent";
 import GET from "../api/depensesSupplementaires/GET";
-import GETMatricules from "../api/vehicules/GET";
 import { NormalDate } from "@/utils/backend-functions";
 import { Metadata } from "next";
 import Unauthorize from "@/components/Unauthorize";
+import Vehicule from "@/models/Vehicule";
 
 export const metadata: Metadata = {
   title: 'Depenses Supplementaires'
@@ -19,14 +19,13 @@ export default async function Home() {
     return <Unauthorize message={message} />
   }
 
-  const resMatricules = await GETMatricules({} as Request);
-  const { data: vehicules } = await resMatricules.json();
+  const matricules = (await Vehicule.find({}, { matricule: 1, _id: 0 })).map(item => item.matricule);
 
   return (
     <MainContent
       dataColumns={vehiculeColumns}
       data={depensesSupplementaires.map((deplacement: any) => ({ ...deplacement, date: new NormalDate(deplacement.date).simplify() }))}
       title="depensesSupplementaires"
-      externalData={{ matricules: vehicules.map((vehicule: { matricule: any; }) => vehicule.matricule), type_depenses: ["vignte", "taxe_tenage", "assurance", "visite_technique", "carnet_metrologe", "onssa",] }} />
+      externalData={{ matricules, type_depenses: ["vignte", "taxe_tenage", "assurance", "visite_technique", "carnet_metrologe", "onssa",] }} />
   )
 }

@@ -18,7 +18,7 @@ const page = async () => {
     return <Unauthorize message={message} />
   }
 
-  const matricules = await Vehicule.find({});
+  const matricules = (await Vehicule.find({}, { matricule: 1, _id: 0 })).map(item => item.matricule);
 
   return (
     <MainContent
