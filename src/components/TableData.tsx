@@ -301,7 +301,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                           desc: ' 🔽',
                         }[header.column.getIsSorted() as string] ?? null}
                       </div>
-                      <div className="relative flex items-center rounded-md bg-background">
+                      <Label className="relative flex items-center rounded-md bg-background">
                         <Input
                           value={(table.getColumn(header.column.id)?.getFilterValue() as string) ?? ""}
                           onChange={(event) => {
@@ -313,7 +313,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                         <SearchIcon
                           className="mx-1 max-w-3 max-h-3"
                         />
-                      </div>
+                      </Label>
 
                     </>
                       :
