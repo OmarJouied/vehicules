@@ -8,6 +8,7 @@ export const metadata: Metadata = {
 }
 
 export default async function Home({ searchParams: { du, au } }: { searchParams: { du: string; au: string } }) {
+  console.log({ url: `/analytics?${du !== undefined && "du=" + du}&${au !== undefined && "au=" + au}` })
   const res = await GET({ url: `/analytics?${du !== undefined && "du=" + du}&${au !== undefined && "au=" + au}`, method: 'GET' } as Request);
   const { data: analytics, message } = await res.json();
 
