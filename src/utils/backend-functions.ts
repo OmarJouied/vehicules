@@ -12,7 +12,7 @@ import { getServerSession } from "next-auth";
 export const wrapperEndPoints = (endpoint: (req: Request) => Promise<Response>) => async (req: Request) => {
   await connectDB();
   const session = await getServerSession(options);
-  const actionPath = req?.url?.split('/')?.pop()?.split("?")?.[0] ?? "";
+  const actionPath = new URL(req?.url, process.env.NEXTAUTH_URL).pathname;
   const method = req.method;
   const { permissions } = session?.user ?? { permissions: null };
 
