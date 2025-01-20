@@ -67,6 +67,12 @@ const AddData = ({ title, fields }: { title: string; fields: string[] }) => {
     })))
   }, [data.matricule]);
 
+  useEffect(() => {
+    if (!open) {
+      setData((prev: any) => ({ ...getDefaultData(), ...(prev.date ? { date: prev.date } : {}) }))
+    }
+  }, [open])
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

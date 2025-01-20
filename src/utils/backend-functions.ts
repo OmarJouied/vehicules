@@ -15,7 +15,7 @@ export const wrapperEndPoints = (endpoint: (req: Request) => Promise<Response>) 
   const actionPath = new URL(req?.url, process.env.NEXTAUTH_URL).pathname.slice(1);
   const method = req.method;
   const { permissions } = session?.user ?? { permissions: null };
-
+  console.log({ actionPath, method, permissions })
   if (actionPath === 'admin' && method === 'POST') return endpoint(req);
 
   if (actionPath && method && permissions !== "*" && permissions?.[actionPath] !== "*" && !permissions?.[actionPath]?.includes(method)) return Response.json({ error: true, message: "Unauthorize" } as ResponseType, { status: 401 });
@@ -145,14 +145,14 @@ export const simplifyAnalytics = ({
   }).map(item => [item[0], item[1] ?? 0]))
 }
 
-export const simplifyVidange = (kilometrages: { _id: string, depls: { kilometrage: number, vidange: number, filter_changer: boolean }[] }[]) => {
+export const simplifyVidange = (kilometrages: { _id: string, depls: { kilometrage: number, vidange: number, filter_changer: boolean }[] }[], limit_km: number) => {
   const result: { kilometrage: number, matricule: string, vidange_changer: "oui" | "no", filter_changer: "oui" | "no" }[] = [];
 
   for (const kilometrage of kilometrages) {
     result.push({ matricule: kilometrage._id, kilometrage: 0, vidange_changer: "no", filter_changer: "no" });
     for (const depl of kilometrage.depls) {
       result[result.length - 1].kilometrage += depl.kilometrage;
-      if (result[result.length - 1].kilometrage >= 15000) {
+      if (result[result.length - 1].kilometrage >= limit_km) {
         result[result.length - 1].vidange_changer = "oui";
         result[result.length - 1].filter_changer = depl.filter_changer ? "no" : "oui";
       }
