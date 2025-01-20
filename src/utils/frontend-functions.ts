@@ -176,7 +176,7 @@ export class SpecificActions {
         qte_lub: "", vidange: "", qte_carburant: "", qte_carburant_ext: "",
         prix_carburant_ext: "", kilometrage_sorte: "", kilometrage_entre: "",
         kilometrage: "", carburant_valeur: "", lub_valeur: "",
-        filter_changer: undefined
+        filter_changer: "no"
       },
       requiredField: ["matricule", "carburant_valeur", "lub_valeur",],
       inputsSpecial(data: DeplacementType & { carburant_valeur: string, lub_valeur: string, kilometrage_entre: string, kilometrage_sorte: string }, setData: any, choises?: any) {
@@ -221,8 +221,8 @@ export class SpecificActions {
           }),
           filter_changer: CheckboxPrix({
             id: "filter_changer",
-            isChecked: (data.vidange ?? 0) <= 0 ? false : !!data.filter_changer, disabled: (data.vidange ?? 0) <= 0,
-            onCheckedChange: () => setData((prev: any) => ({ ...prev, filter_changer: !prev.filter_changer === true ? "oui" : "no" }))
+            isChecked: (data.vidange ?? 0) <= 0 ? false : (data.filter_changer as unknown as string) === "oui", disabled: (data.vidange ?? 0) <= 0,
+            onCheckedChange: () => setData((prev: any) => ({ ...prev, filter_changer: (prev.filter_changer as string) === "no" ? "oui" : "no" }))
           }),
         }
       },
