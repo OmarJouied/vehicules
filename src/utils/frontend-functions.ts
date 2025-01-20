@@ -222,7 +222,7 @@ export class SpecificActions {
           filter_changer: CheckboxPrix({
             id: "filter_changer",
             isChecked: (data.vidange ?? 0) <= 0 ? false : !!data.filter_changer, disabled: (data.vidange ?? 0) <= 0,
-            onCheckedChange: () => setData((prev: any) => ({ ...prev, filter_changer: !prev.filter_changer === true ? "oui" : undefined }))
+            onCheckedChange: () => setData((prev: any) => ({ ...prev, filter_changer: !prev.filter_changer === true ? "oui" : "no" }))
           }),
         }
       },
