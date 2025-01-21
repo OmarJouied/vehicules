@@ -1,7 +1,7 @@
 export const pages = [
   "users", "vehicules", "deplacements", "rechanges",
   "vidange", "analytics", "graphiques",
-  "depensesSupplementaires", "change_type_carburant", "prix", "taxe",
+  "depensesSupplementaires", "vehiculeTypeCarburant", "prix", "taxe",
 ]
 
 export const links = pages.map(page => ({ label: page, href: '/' + page }))
