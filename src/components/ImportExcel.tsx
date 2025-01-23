@@ -24,12 +24,10 @@ const ImportExcel = ({ fields, target }: { fields: string[]; target: string }) =
 
         const wsname = wb.SheetNames[indexSheet];
         const ws = wb.Sheets[wsname];
-        console.log({ wsname, ws: Object.values(ws).slice(1) })
         const data = utils.sheet_to_json(ws, {
           raw: false,
           dateNF: "dd/mm/yyy"
         });
-        console.log({ data })
         res(data);
       };
       fileReader.onerror = (e) => {

@@ -33,8 +33,8 @@ export const columns: (value: string[]) => ColumnDef<VehiculeType>[] = (vehicule
     cell: ({ row }: { row: any }) => (
       <div className="">{row.getValue(title)}</div>
     ),
-    filterFn: (row: any, id: any, value: any) => {
-      return `${row.original[id] ?? ""}`.toLowerCase().includes(value.toLowerCase());
+    filterFn: (row: any, id: any, value: string) => {
+      return value.startsWith("!") ? !`${row.original[id] ?? ""}`.toLowerCase().includes(value.slice(1).toLowerCase()) : `${row.original[id] ?? ""}`.toLowerCase().includes(value.toLowerCase());
     },
   })),
 ]

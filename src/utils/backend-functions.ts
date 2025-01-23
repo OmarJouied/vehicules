@@ -15,7 +15,7 @@ export const wrapperEndPoints = (endpoint: (req: Request) => Promise<Response>) 
   const actionPath = new URL(req?.url, process.env.NEXTAUTH_URL).pathname.slice(1).split("/").pop();
   const method = req.method;
   const { permissions } = session?.user ?? { permissions: null };
-  console.log({ actionPath, method, permissions })
+
   if (actionPath === 'admin' && method === 'POST') return endpoint(req);
 
   if (actionPath && method && permissions !== "*" && permissions?.[actionPath] !== "*" && !permissions?.[actionPath]?.includes(method)) return Response.json({ error: true, message: "Unauthorize" } as ResponseType, { status: 401 });
@@ -117,7 +117,7 @@ export const simplifyAnalytics = ({
     matricule,
     marque,
     kilometrage,
-    "con%": (qte_carburant * 100 / (kilometrage || 1)).toFixed(1),
+    "con%": ((qte_carburant + qte_carburant_ext) * 100 / (kilometrage || 1)).toFixed(1),
     qte_lub: qte_lub.toFixed(2),
     vidange: vidange.toFixed(2),
     val_lub_ttc: val_lub_ttc.toFixed(2),

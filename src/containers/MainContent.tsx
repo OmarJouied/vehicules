@@ -16,7 +16,7 @@ const MainContent = ({ dataColumns, data, title, externalData }: { dataColumns: 
   }, [data])
 
   return (
-    <main className='container'>
+    <main className='container flex flex-col flex-1'>
       <context.Provider value={{ setCurrentData, externalData }}>
         <DataHeader fields={dataColumns} title={title} />
         <TableData columns={columnsName} data={currentData} title={title} />

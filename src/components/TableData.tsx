@@ -156,7 +156,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
   }, [table.getAllColumns().filter(col => col.getIsVisible()).length])
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col flex-1">
       <div className="flex flex-wrap items-center py-4 justify-between gap-4">
         <div className="flex flex-wrap gap-4 items-center">
           {title === "vidange" && (
@@ -222,10 +222,56 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                 <PrintTable
                   target={title}
                   data={
-                    table.getFilteredSelectedRowModel().rows.length > 0 ?
-                      table.getSelectedRowModel().rows.map(row => Object.fromEntries(row.getVisibleCells().slice(1).map(cell => [cell.column.id, cell.getValue()])))
-                      :
-                      table.getRowModel().rows.map(row => Object.fromEntries(row.getVisibleCells().slice(1).map(cell => [cell.column.id, cell.getValue()])))
+                    (() => {
+                      const data = table.getFilteredSelectedRowModel().rows.length > 0 ?
+                        table.getSelectedRowModel().rows.map(row => Object.fromEntries(row.getVisibleCells().slice(1).map(cell => [cell.column.id, cell.getValue()])))
+                        :
+                        table.getRowModel().rows.map(row => Object.fromEntries(row.getVisibleCells().slice(1).map(cell => [cell.column.id, cell.getValue()])))
+                      return [...data, title === "analytics" ? Object.fromEntries([
+                        "matricule",
+                        "kilometrage",
+                        "qte_lub",
+                        "vidange",
+                        "val_lub_ttc",
+                        "val_lub",
+                        "qte_carburant",
+                        "val_carburant_ttc",
+                        "val_carburant",
+                        "qte_carburant_ext",
+                        "val_carburant_ext_ttc",
+                        "val_carburant_ext",
+                        "val_rechange_ttc",
+                        "val_rechange",
+                        "val_rechange_ext_ttc",
+                        "val_rechange_ext",
+                        "con%",
+                        "visite_technique",
+                        "carnet_metrologe",
+                        "taxe_tenage",
+                        "assurance",
+                        "vignte",
+                        "onssa",
+                        "total",
+                      ].map(prop => prop === "con%" ?
+                        [
+                          prop, ((
+                            data.map((obj: any) => obj["qte_carburant"]).reduce((p: string, c: string) => +p + +c)
+                            +
+                            data.map((obj: any) => obj["qte_carburant_ext"]).reduce((p: string, c: string) => +p + +c)
+                          ) * 100 / (
+                              data.map((obj: any) => obj["kilometrage"]).reduce((p: string, c: string) => +p + +c) || 1
+                            )).toFixed(1)
+                        ] : prop === "matricule" ? [
+                          prop, "Total"
+                        ] : prop === "kilometrage" ? [
+                          prop, data.map((obj: any) => obj[prop]).reduce((p: string, c: string) => +p + +c)
+                        ] :
+                          [
+                            prop, data.map((obj: any) => obj[prop]).reduce((p: string, c: string) => +p + +c).toFixed(2)
+                          ]
+                      )) : {}]
+                    }
+                    )()
                   }
                   columns={table.getAllColumns().filter(col => col.getIsVisible()).slice(1).map(col => col.id)}
                   date={(() => {
@@ -264,8 +310,8 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
           <ColumnVisible table={table} />
         </div>
       </div>
-      <div className="rounded-md border border-primary overflow-hidden">
-        <Table ref={tableRef as unknown as LegacyRef<HTMLTableElement>}>
+      <div className="rounded-md border border-primary overflow-auto flex-1 relative flex">
+        <Table className="absolute" ref={tableRef as unknown as LegacyRef<HTMLTableElement>}>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

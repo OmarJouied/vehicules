@@ -15,7 +15,7 @@ import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel
 import Image from "next/image"
 import { columns as Columns } from "./columns"
 
-export default function PrintTable({ data, columns, target, date }: { data: any; columns: any; target?: string; date?: string }) {
+const PrintTable = ({ data, columns, target, date }: { data: any; columns: any; target?: string; date?: string }) => {
   const [open, setOpen] = useState(false);
   const contentRef = useRef(null);
   const reactToPrintFn = useReactToPrint({
@@ -30,6 +30,11 @@ export default function PrintTable({ data, columns, target, date }: { data: any;
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: data.length
+      }
+    }
   })
 
   useEffect(() => {
@@ -88,7 +93,21 @@ export default function PrintTable({ data, columns, target, date }: { data: any;
                 </TableHeader>
                 <TableBody className="print:[&>*:nth-child(odd)]:bg-gray-100">
                   {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row: any) => (
+                    table.getRowModel().rows.map((row, idx, arr) => target === "analytics" && idx === arr.length - 1 ? (
+                      <TableRow
+                        key={row.id}
+                        className="print:mt-2 print:!bg-primary print:!text-white print:font-bold"
+                      >
+                        {row.getVisibleCells().slice(1).map((cell: any) => (
+                          <TableCell key={cell.id} className={`whitespace-nowrap px-2 print:border print:text-base`}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ) : (
                       <TableRow
                         key={row.id}
                       >
@@ -121,3 +140,5 @@ export default function PrintTable({ data, columns, target, date }: { data: any;
     </AlertDialog>
   )
 }
+
+export default PrintTable
