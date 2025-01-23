@@ -255,19 +255,19 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
                       ].map(prop => prop === "con%" ?
                         [
                           prop, ((
-                            data.map((obj: any) => obj["qte_carburant"]).reduce((p: string, c: string) => +p + +c)
+                            data.map((obj: any) => obj["qte_carburant"]).reduce((p: string, c: string) => +p + +c, 0)
                             +
-                            data.map((obj: any) => obj["qte_carburant_ext"]).reduce((p: string, c: string) => +p + +c)
+                            data.map((obj: any) => obj["qte_carburant_ext"]).reduce((p: string, c: string) => +p + +c, 0)
                           ) * 100 / (
-                              data.map((obj: any) => obj["kilometrage"]).reduce((p: string, c: string) => +p + +c) || 1
+                              data.map((obj: any) => obj["kilometrage"]).reduce((p: string, c: string) => +p + +c, 0) || 1
                             )).toFixed(1)
                         ] : prop === "matricule" ? [
                           prop, "Total"
                         ] : prop === "kilometrage" ? [
-                          prop, data.map((obj: any) => obj[prop]).reduce((p: string, c: string) => +p + +c)
+                          prop, data.map((obj: any) => obj[prop]).reduce((p: string, c: string) => +p + +c, 0)
                         ] :
                           [
-                            prop, data.map((obj: any) => obj[prop]).reduce((p: string, c: string) => +p + +c).toFixed(2)
+                            prop, data.map((obj: any) => obj[prop]).reduce((p: string, c: string) => +p + +c, 0).toFixed(2)
                           ]
                       )) : {}]
                     }
