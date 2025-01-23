@@ -34,7 +34,13 @@ export const columns: (value: string[]) => ColumnDef<VehiculeType>[] = (vehicule
       <div className="">{row.getValue(title)}</div>
     ),
     filterFn: (row: any, id: any, value: string) => {
-      return value.startsWith("!") ? !`${row.original[id] ?? ""}`.toLowerCase().includes(value.slice(1).toLowerCase()) : `${row.original[id] ?? ""}`.toLowerCase().includes(value.toLowerCase());
+      return value.startsWith("<") ?
+        +row.original[id] < +value.slice(1) :
+        value.startsWith(">") ?
+          +row.original[id] > +value.slice(1) :
+          value.startsWith("!") ?
+            !`${row.original[id] ?? ""}`.toLowerCase().includes(value.slice(1).toLowerCase()) :
+            `${row.original[id] ?? ""}`.toLowerCase().includes(value.toLowerCase());
     },
   })),
 ]
