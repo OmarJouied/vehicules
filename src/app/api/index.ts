@@ -1,1 +1,1 @@
-export const pageRowsLength = 10;
+export const pageRowsLength = 100;
