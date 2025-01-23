@@ -129,7 +129,7 @@ export function TableData({ columns, data, title }: { columns: ColumnDef<Vehicul
         table.setPageSize(data.length);
         break;
     }
-  }, []);
+  }, [data.length]);
 
   useEffect(() => {
     if (title === 'analytics') {
